@@ -1,0 +1,2 @@
+<!-- Stranica na kojoj ce se nalaziti popis dogadaja, sortirane od najnovijih prema najstarijim.
+Od svakog dogadaja ce biti prikazane neke osnovne informacije, a do slozenijih ce se doci klikom na njih. -->

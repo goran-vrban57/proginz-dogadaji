@@ -1,0 +1,1 @@
+<!-- Pocetna stranica aplikacije. Sadrzavati ce osnovne informacije ili nekakvu dobrodoslicu. -->
