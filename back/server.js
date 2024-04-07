@@ -1,3 +1,9 @@
+const express = require('express');
+const { MongoClient } = require('mongodb');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
 // MongoDB connection URL
 const mongoURI = 'mongodb://localhost:27017';
 const dbName = 'my-database';
