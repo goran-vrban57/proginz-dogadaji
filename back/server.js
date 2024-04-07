@@ -5,8 +5,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // MongoDB connection URL
-const mongoURI = 'mongodb://localhost:27017';
-const dbName = 'my-database';
+const mongoURI = 'mongodb+srv://app:11@dogadaji0.ijqxjrt.mongodb.net/?retryWrites=true&w=majority&appName=Dogadaji0';
+const dbName = 'admin';
 
 // Connect to MongoDB
 MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
