@@ -29,8 +29,7 @@ MongoClient.connect(mongoURI)
     //administrator
     app.get("/api/administrator", async (req, res) => {
       try {
-        const collection = db.collection("administrator");
-        const data = await collection.find().toArray();
+        const data = await kolekcije.administrator.find().toArray();
         res.json(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -41,8 +40,7 @@ MongoClient.connect(mongoURI)
     app.get("/api/administrator/:id", async (req,res)=> {
       try {
         const id= req.params.id;
-        const collection = db.collection("administrator");
-        const data = await collection.findOne({"_id": new ObjectId(id)});
+        const data = await kolekcije.administrator.findOne({"_id": new ObjectId(id)});
 
         if(!data){
           return res.status(404).json({message: 'Nema rezultata.'});
@@ -58,8 +56,7 @@ MongoClient.connect(mongoURI)
     //dogadaj
     app.get("/api/dogadaj", async (req, res) => {
       try {
-        const collection = db.collection("dogadaj");
-        const data = await collection.find().toArray();
+        const data = await kolekcije.dogadaj.find().toArray();
         res.json(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -70,8 +67,7 @@ MongoClient.connect(mongoURI)
     app.get("/api/dogadaj/:id", async (req,res)=> {
       try {
         const id= req.params.id;
-        const collection = db.collection("dogadaj");
-        const data = await collection.findOne({"_id": new ObjectId(id)});
+        const data = await kolekcije.dogadaj.findOne({"_id": new ObjectId(id)});
 
         if(!data){
           return res.status(404).json({message: 'Nema rezultata.'});
@@ -87,8 +83,7 @@ MongoClient.connect(mongoURI)
     //korisnik
     app.get("/api/korisnik", async (req, res) => {
       try {
-        const collection = db.collection("korisnik");
-        const data = await collection.find().toArray();
+        const data = await kolekcije.korisnik.find().toArray();
         res.json(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -99,8 +94,7 @@ MongoClient.connect(mongoURI)
     app.get("/api/korisnik/:id", async (req,res)=> {
       try {
         const id= req.params.id;
-        const collection = db.collection("korisnik");
-        const data = await collection.findOne({"_id": new ObjectId(id)});
+        const data = await kolekcije.korisnik.findOne({"_id": new ObjectId(id)});
 
         if(!data){
           return res.status(404).json({message: 'Nema rezultata.'});
@@ -116,8 +110,7 @@ MongoClient.connect(mongoURI)
     //objava
     app.get("/api/objava", async (req, res) => {
       try {
-        const collection = db.collection("objava");
-        const data = await collection.find().toArray();
+        const data = await kolekcije.objava.find().toArray();
         res.json(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -128,8 +121,7 @@ MongoClient.connect(mongoURI)
     app.get("/api/objava/:id", async (req,res)=> {
       try {
         const id= req.params.id;
-        const collection = db.collection("objava");
-        const data = await collection.findOne({"_id": new ObjectId(id)});
+        const data = await kolekcije.objava.findOne({"_id": new ObjectId(id)});
 
         if(!data){
           return res.status(404).json({message: 'Nema rezultata.'});
