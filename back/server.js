@@ -10,13 +10,17 @@ const PORT = process.env.PORT || 3000;
 const mongoURI = "mongodb://localhost:27017";
 const dbName = "baza";
 
-MongoClient.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+MongoClient.connect(mongoURI)
   .then((client) => {
     console.log("Connected to MongoDB");
     const db = client.db(dbName);
+
+    const kolekcije = {
+      korisnik: db.collection("korisnik"),
+      administrator: db.collection ("administrator"),
+      objava: db.collection("objava"),
+      dogadaj: db.collection("dogadaj")
+    };
 
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
@@ -138,30 +142,91 @@ MongoClient.connect(mongoURI, {
       }
     });
 
-  })
+    app.post("/api/registracija", async (req, res) => {
+      try{
+        const podaci = req.body;
+        const rezultat = await kolekcije.korisnik.insertOne(podaci);
+
+        res.status(201).json(rezultat); //rezultat.ops nece, trebalo bi se dohvatit preko rezultat.insertedId ako treba info
+      } catch(error) {
+        console.error("Greška u registraciji: ", error);
+        res.status(500).json({ error: "Greška u registraciji!" });
+      }
+    });
+
+    app.post("/api/dodavanjeAdmina", async (req, res) => { //za svaki slucaj
+      try{
+        const podaci = req.body;
+        const rezultat = await kolekcije.administrator.insertOne(podaci);
+
+        res.status(201).json(rezultat);
+      } catch(error) {
+        console.error("Greška u dodavanju admina: ", error);
+        res.status(500).json({ error: "Greška u dodavanju admina!" });
+      }
+    });
+
+
+    app.post("/api/dodavanjeDogadaja", async (req, res) => {
+      try{
+        const podaci = req.body;
+        const rezultat = await kolekcije.dogadaj.insertOne(podaci);
+
+        res.status(201).json(rezultat);
+      } catch(error) {
+        console.error("Greška u dodavanju događaja: ", error);
+        res.status(500).json({ error: "Greška u dodavanju događaja!" });
+      }
+    });
+
+    app.post("/api/dodavanjeObjava", async (req, res) => {
+      try{
+        const podaci = req.body;
+        const rezultat = await kolekcije.objava.insertOne(podaci);
+
+        res.status(201).json(rezultat);
+      } catch(error) {
+        console.error("Greška u dodavanju objava: ", error);
+        res.status(500).json({ error: "Greška u dodavanju objava!" });
+      }
+    });
+
+    app.post("/api/objava/:objavaId/komentiranje", async (req, res) => { //objavaId u URLu zbog ne-cacheanja
+      try{
+        const podaci = req.body;
+        const rezultat = await kolekcije.objava.findOneAndUpdate(
+          {_id: new ObjectId(req.params.objavaId)},
+          {$push: {komentari: {id: podaci.id, id_korisnika: podaci.id_korisnika, korisnicko_ime: podaci.korisnicko_ime, //sto sa ovim podaci.id?
+            sadrzaj_komentara: podaci.sadrzaj_komentara, datum_komentara: podaci.datum_komentara}}},
+          //{returnOriginal: true}
+        );
+
+        res.status(201).json(rezultat);
+
+      } catch(error) {
+        console.error("Greška u komentiranju: ", error);
+        res.status(500).json({ error: "Greška u komentiranju!" });
+      }
+  });
+})
   .catch((err) => {
     console.error("Failed to connect to MongoDB", err);
     process.exit(1);
   });
 
-
-//get dogadaji
-//get dogadaj by id
-//post dogadaj
 //put dogadaj
 //delete dogadaj
 
-//get objave
-//get objava by id w/ comment
-//post objava
-//post/put? komentar na objavu
 //delete komentar
 //put objava
 //delete objava
 
-//get korisnici
-//get korisnik (login)
-//get korisnik by id
-//post korisnik (registracija)
+
 //put korisnik
 //delete korisnik
+
+//get nadolazece dogadaje
+//get protekle dogadaje
+//get korisnike kojima je newsletter true
+//get nedavne objave (3-7 dana) --neobavezno
+//post korisnik (login)
