@@ -148,6 +148,26 @@ MongoClient.connect(mongoURI)
       }
     });
 
+    app.post("/api/login", async (req, res) => {
+      try{
+        const podaci = req.body;
+        const rezultat = await kolekcije.korisnik.findOne(
+          {korisnicko_ime: podaci.korisnicko_ime, lozinka: podaci.lozinka}
+        );
+
+        if(rezultat != null) {
+          res.status(200).json(rezultat); //login uspjesan
+        }
+        else {
+          res.status(401).json(rezultat); //login neuspjesan
+        }
+        
+      } catch(error) {
+        console.error("Greška u loginu: ", error);
+        res.status(500).json({ error: "Greška u loginu!" });
+      }
+    });
+
     app.post("/api/dodavanjeAdmina", async (req, res) => { //za svaki slucaj
       try{
         const podaci = req.body;
@@ -204,6 +224,25 @@ MongoClient.connect(mongoURI)
         res.status(500).json({ error: "Greška u komentiranju!" });
       }
   });
+
+    app.put("/api/izmjenaKorisnika/:korisnikId", async (req, res) => {
+      try {
+        const podaci = req.body;
+        const rezultat = await kolekcije.korisnik.findOneAndUpdate(
+          {_id: new ObjectId(req.params.korisnikId)},
+          {$set: {korisnicko_ime: podaci.korisnicko_ime, email_adresa: podaci.email_adresa, 
+            lozinka: podaci.lozinka, prima_newsletter: podaci.prima_newsletter}}
+        );
+  
+        res.status(200).json(rezultat);
+
+      } catch(error) {
+        console.error("Greška u izmjeni korisničkih podataka: ", error);
+        res.status(500).json({ error: "Greška u izmjeni korisničkih podataka!" });
+      }
+    });
+
+
 })
   .catch((err) => {
     console.error("Failed to connect to MongoDB", err);
