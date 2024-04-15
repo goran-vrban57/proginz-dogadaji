@@ -7,6 +7,8 @@ const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 3000;
 
+app.use(express.json());
+
 const mongoURI = "mongodb://localhost:27017";
 const dbName = "baza";
 
@@ -162,6 +164,7 @@ MongoClient.connect(mongoURI)
     app.post("/api/dodavanjeDogadaja", async (req, res) => {
       try{
         const podaci = req.body;
+        podaci.id_admina = new ObjectId(podaci.id_admina);
         const rezultat = await kolekcije.dogadaj.insertOne(podaci);
 
         res.status(201).json(rezultat);
@@ -174,6 +177,7 @@ MongoClient.connect(mongoURI)
     app.post("/api/dodavanjeObjava", async (req, res) => {
       try{
         const podaci = req.body;
+        podaci.id_admina = new ObjectId(podaci.id_admina);
         const rezultat = await kolekcije.objava.insertOne(podaci);
 
         res.status(201).json(rezultat);
