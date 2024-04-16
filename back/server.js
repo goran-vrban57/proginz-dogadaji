@@ -81,7 +81,27 @@ MongoClient.connect(mongoURI)
         res.status(500).json({error:"Interna greška poslužitelja."});
       }
     });
+
+    app.get("/api/nadolazeciDogadaji", async (req, res) => {
+      try {
+        const data = await kolekcije.dogadaj.find({datum_odrzavanja: {$gte: new Date()}}).sort({datum_odrzavanja: 1}).toArray(); //1 rastuce
+        res.json(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).json({ error: "Interna greška poslužitelja." });
+      }
+    });
     
+    app.get("/api/protekliDogadaji", async (req, res) => {
+      try {
+        const data = await kolekcije.dogadaj.find({datum_odrzavanja: {$lt: new Date()}}).sort({datum_odrzavanja: -1}).toArray(); //-1 padajuce
+        res.json(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).json({ error: "Interna greška poslužitelja." });
+      }
+    });
+
     //korisnik
     app.get("/api/korisnik", async (req, res) => {
       try {
@@ -106,6 +126,16 @@ MongoClient.connect(mongoURI)
       } catch (error) {
         console.error("Error: ", error)
         res.status(500).json({error:"Interna greška poslužitelja."});
+      }
+    });
+
+    app.get("/api/korisnikNewsletter", async (req, res) => {
+      try {
+        const data = await kolekcije.korisnik.find({"prima_newsletter": true}).toArray();
+        res.json(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).json({ error: "Interna greška poslužitelja." });
       }
     });
 
@@ -291,7 +321,4 @@ MongoClient.connect(mongoURI)
 //delete objava
 //delete korisnik
 
-//get nadolazece dogadaje
-//get protekle dogadaje
-//get korisnike kojima je newsletter true
 //get nedavne objave (3-7 dana) --neobavezno
