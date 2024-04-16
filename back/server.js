@@ -242,6 +242,42 @@ MongoClient.connect(mongoURI)
       }
     });
 
+    app.put("/api/izmjenaDogadaja/:dogadajId", async (req, res) => {
+      try {
+        const podaci = req.body;
+        const rezultat = await kolekcije.dogadaj.findOneAndUpdate(
+          {_id: new ObjectId(req.params.dogadajId)},
+          {$set: {naziv_dogadaja: podaci.naziv_dogadaja, opis_dogadaja: podaci.opis_dogadaja, 
+            lokacija_dogadaja: podaci.lokacija_dogadaja, datum_odrzavanja: podaci.datum_odrzavanja,
+            datum_zavrsetka: podaci.datum_zavrsetka, datum_objave: podaci.datum_objave, slika_objave: podaci.slika_objave}}
+        );
+  
+        res.status(200).json(rezultat);
+
+      } catch(error) {
+        console.error("Greška u izmjeni događaja: ", error);
+        res.status(500).json({ error: "Greška u izmjeni događaja!" });
+      }
+    });
+
+    app.put("/api/izmjenaObjave/:objavaId", async (req, res) => {
+      try {
+        const podaci = req.body;
+        const rezultat = await kolekcije.objava.findOneAndUpdate(
+          {_id: new ObjectId(req.params.objavaId)},
+          {$set: {naziv_objave: podaci.naziv_objave, opis_objave: podaci.opis_objave, 
+            datum_objave: podaci.datum_objave, slika_objave: podaci.slika_objave, 
+            dozvoljeno_komentiranje: podaci.dozvoljeno_komentiranje}}
+        );
+
+        res.status(200).json(rezultat);
+
+      } catch(error) {
+        console.error("Greška u izmjeni objave: ", error);
+        res.status(500).json({error: "Greška u izmjeni objave!"});
+      }
+    });
+
 
 })
   .catch((err) => {
@@ -249,19 +285,13 @@ MongoClient.connect(mongoURI)
     process.exit(1);
   });
 
-//put dogadaj
+
 //delete dogadaj
-
 //delete komentar
-//put objava
 //delete objava
-
-
-//put korisnik
 //delete korisnik
 
 //get nadolazece dogadaje
 //get protekle dogadaje
 //get korisnike kojima je newsletter true
 //get nedavne objave (3-7 dana) --neobavezno
-//post korisnik (login)
