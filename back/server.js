@@ -308,6 +308,60 @@ MongoClient.connect(mongoURI)
       }
     });
 
+    app.delete("/api/brisanjeKorisnika/:korisnikId", async (req, res) => {
+      try {
+        const rezultat = await kolekcije.korisnik.deleteOne({
+          _id: new ObjectId(req.params.korisnikId)
+        });
+
+        res.status(200).json(rezultat);
+      } catch (error) {
+        console.error("Greška u brisanju korisnika: ", error);
+        res.status(500).json({error: "Greška u brisanju korisnika!"});
+      }
+    });
+
+    app.delete("/api/brisanjeObjave/:objavaId", async (req, res) => {
+      try {
+        const rezultat = await kolekcije.objava.deleteOne({
+          _id: new ObjectId(req.params.objavaId)
+        });
+
+        res.status(200).json(rezultat);
+      } catch (error) {
+        console.error("Greška u brisanju objave: ", error);
+        res.status(500).json({error: "Greška u brisanju objave!"});
+      }
+    });
+
+    app.delete("/api/brisanjeDogadaja/:dogadajId", async (req, res) => {
+      try {
+        const rezultat = await kolekcije.dogadaj.deleteOne({
+          _id: new ObjectId(req.params.dogadajId)
+        });
+
+        res.status(200).json(rezultat);
+      } catch (error) {
+        console.error("Greška u brisanju događaja: ", error);
+        res.status(500).json({error: "Greška u brisanju događaja!"});
+      }
+    });
+
+    app.delete("/api/objava/:objavaId/brisanjeKomentara/:komentarId", async (req, res) => {
+      try{
+        const rezultat = await kolekcije.objava.findOneAndUpdate(
+          {_id: new ObjectId(req.params.objavaId)},
+          {$pull: {komentari: {id: req.params.komentarId}}}
+        );
+
+        res.status(200).json(rezultat);
+
+      } catch(error) {
+        console.error("Greška u brisanju komentara: ", error);
+        res.status(500).json({ error: "Greška u brisanju komentara!" });
+      }
+  });
+
 
 })
   .catch((err) => {
