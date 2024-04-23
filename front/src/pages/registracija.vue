@@ -3,13 +3,13 @@ Korisnicko ime, e-mail adresa, lozinka/potvrdi lozinku.-->
 
 <template>
     <q-page class="justify-center items-center">
-        <h5 class="text-h3 text-orange text-center">Registracija</h5>
+        <h5 class="text-h3 text-primary text-center">Registracija</h5>
         <q-form class="q-gutter-md" @submit="provjeriPodatke">
             <q-input square filled v-model="podaci.korisnicko_ime" type="text" label="Vaše korisničko ime" />
             <q-input square filled v-model="podaci.email_korisnika" type="email" label="Vaš email" />
             <q-input square filled v-model="podaci.lozinka_korisnika" type="password" label="Lozinka" />
             <q-input square filled v-model="podaci.provjera_lozinke" type="password" label="Ponovite lozinku" />
-            <div class="text-center"><q-btn size="lg" type="submit" label="Registriraj se" color="orange" /> </div>
+            <div class="text-center"><q-btn size="lg" type="submit" label="Registriraj se" color="primary" /> </div>
         </q-form>
     </q-page>
 </template>
