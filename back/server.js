@@ -189,22 +189,26 @@ MongoClient.connect(mongoURI)
     });
 
     app.post("/api/login", async (req, res) => {
+      const podaci = req.body;
       try {
-        const podaci = req.body;
         const rezultat = await kolekcije.korisnik.findOne(
-          { korisnicko_ime: podaci.korisnicko_ime, lozinka: podaci.lozinka }
+          { korisnicko_ime: podaci.korisnicko_ime }
         );
 
-        if (rezultat != null) {
-          res.status(200).json(rezultat); //login uspjesan
+        if (rezultat) {
+          bcrypt.compare(podaci.lozinka_korisnika, rezultat.lozinka_korisnika, async function (err, bcryptRes) {
+            if (bcryptRes) {
+              res.status(200).json(rezultat);
+            } else {
+              res.status(401).json(rezultat); //nije dobra lozinka
+            }
+          })
+        } else {
+          res.status(401).json(rezultat); //nije dobar username
         }
-        else {
-          res.status(401).json(rezultat); //login neuspjesan
-        }
-
       } catch (error) {
-        console.error("Greška u loginu: ", error);
-        res.status(500).json({ error: "Greška u loginu!" });
+        console.error("Greška u prijavi: ", error);
+        res.status(500).json({ error: "Greška u prijavi!" });
       }
     });
 

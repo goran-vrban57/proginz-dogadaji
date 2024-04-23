@@ -48,7 +48,7 @@ export default {
                     message: "Prijava neuspješna! Provjerite korisničko ime i lozinku.",
                     icon: "warning",
                 });
-                console.log("Greška pri registraciji: " + error);
+                console.log("Greška pri prijavi: " + error);
             }
         },
 
