@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 const { MongoClient, ObjectId } = require("mongodb");
 
 
@@ -19,7 +20,7 @@ MongoClient.connect(mongoURI)
 
     const kolekcije = {
       korisnik: db.collection("korisnik"),
-      administrator: db.collection ("administrator"),
+      administrator: db.collection("administrator"),
       objava: db.collection("objava"),
       dogadaj: db.collection("dogadaj")
     };
@@ -39,19 +40,19 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.get("/api/administrator/:id", async (req,res)=> {
+    app.get("/api/administrator/:id", async (req, res) => {
       try {
-        const id= req.params.id;
-        const data = await kolekcije.administrator.findOne({"_id": new ObjectId(id)});
+        const id = req.params.id;
+        const data = await kolekcije.administrator.findOne({ "_id": new ObjectId(id) });
 
-        if(!data){
-          return res.status(404).json({message: 'Nema rezultata.'});
+        if (!data) {
+          return res.status(404).json({ message: 'Nema rezultata.' });
         }
 
         res.json(data);
       } catch (error) {
         console.error("Error: ", error)
-        res.status(500).json({error:"Interna greška poslužitelja."});
+        res.status(500).json({ error: "Interna greška poslužitelja." });
       }
     });
 
@@ -66,35 +67,35 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.get("/api/dogadaj/:id", async (req,res)=> {
+    app.get("/api/dogadaj/:id", async (req, res) => {
       try {
-        const id= req.params.id;
-        const data = await kolekcije.dogadaj.findOne({"_id": new ObjectId(id)});
+        const id = req.params.id;
+        const data = await kolekcije.dogadaj.findOne({ "_id": new ObjectId(id) });
 
-        if(!data){
-          return res.status(404).json({message: 'Nema rezultata.'});
+        if (!data) {
+          return res.status(404).json({ message: 'Nema rezultata.' });
         }
 
         res.json(data);
       } catch (error) {
         console.error("Error: ", error)
-        res.status(500).json({error:"Interna greška poslužitelja."});
+        res.status(500).json({ error: "Interna greška poslužitelja." });
       }
     });
 
     app.get("/api/nadolazeciDogadaji", async (req, res) => {
       try {
-        const data = await kolekcije.dogadaj.find({datum_odrzavanja: {$gte: new Date()}}).sort({datum_odrzavanja: 1}).toArray(); //1 rastuce
+        const data = await kolekcije.dogadaj.find({ datum_odrzavanja: { $gte: new Date() } }).sort({ datum_odrzavanja: 1 }).toArray(); //1 rastuce
         res.json(data);
       } catch (error) {
         console.error("Error fetching data:", error);
         res.status(500).json({ error: "Interna greška poslužitelja." });
       }
     });
-    
+
     app.get("/api/protekliDogadaji", async (req, res) => {
       try {
-        const data = await kolekcije.dogadaj.find({datum_odrzavanja: {$lt: new Date()}}).sort({datum_odrzavanja: -1}).toArray(); //-1 padajuce
+        const data = await kolekcije.dogadaj.find({ datum_odrzavanja: { $lt: new Date() } }).sort({ datum_odrzavanja: -1 }).toArray(); //-1 padajuce
         res.json(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -113,25 +114,25 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.get("/api/korisnik/:id", async (req,res)=> {
+    app.get("/api/korisnik/:id", async (req, res) => {
       try {
-        const id= req.params.id;
-        const data = await kolekcije.korisnik.findOne({"_id": new ObjectId(id)});
+        const id = req.params.id;
+        const data = await kolekcije.korisnik.findOne({ "_id": new ObjectId(id) });
 
-        if(!data){
-          return res.status(404).json({message: 'Nema rezultata.'});
+        if (!data) {
+          return res.status(404).json({ message: 'Nema rezultata.' });
         }
 
         res.json(data);
       } catch (error) {
         console.error("Error: ", error)
-        res.status(500).json({error:"Interna greška poslužitelja."});
+        res.status(500).json({ error: "Interna greška poslužitelja." });
       }
     });
 
     app.get("/api/korisnikNewsletter", async (req, res) => {
       try {
-        const data = await kolekcije.korisnik.find({"prima_newsletter": true}).toArray();
+        const data = await kolekcije.korisnik.find({ "prima_newsletter": true }).toArray();
         res.json(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -150,61 +151,70 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.get("/api/objava/:id", async (req,res)=> {
+    app.get("/api/objava/:id", async (req, res) => {
       try {
-        const id= req.params.id;
-        const data = await kolekcije.objava.findOne({"_id": new ObjectId(id)});
+        const id = req.params.id;
+        const data = await kolekcije.objava.findOne({ "_id": new ObjectId(id) });
 
-        if(!data){
-          return res.status(404).json({message: 'Nema rezultata.'});
+        if (!data) {
+          return res.status(404).json({ message: 'Nema rezultata.' });
         }
 
         res.json(data);
       } catch (error) {
         console.error("Error: ", error)
-        res.status(500).json({error:"Interna greška poslužitelja."});
+        res.status(500).json({ error: "Interna greška poslužitelja." });
       }
     });
 
     app.post("/api/registracija", async (req, res) => {
-      try{
-        const podaci = req.body;
-        const rezultat = await kolekcije.korisnik.insertOne(podaci);
 
-        res.status(201).json(rezultat); //rezultat.ops nece, trebalo bi se dohvatit preko rezultat.insertedId ako treba info
-      } catch(error) {
-        console.error("Greška u registraciji: ", error);
-        res.status(500).json({ error: "Greška u registraciji!" });
-      }
+      const podaci = req.body;
+      const saltRounds = 10;
+      bcrypt.hash(podaci.lozinka_korisnika, saltRounds, async function (err, hash) {
+        if (err) {
+          console.error("Greška pri hashanju lozinke:", err);
+          return response.status(500).json({ error: true, message: "Greška pri hashanju lozinke." });
+        }
+        try {
+          podaci.lozinka_korisnika = hash;
+          const rezultat = await kolekcije.korisnik.insertOne(podaci);
+          res.status(201).json(rezultat);
+        } catch (error) {
+          console.error("Greška u registraciji: ", error);
+          res.status(500).json({ error: "Greška u registraciji!" });
+        }
+      })
+
     });
 
     app.post("/api/login", async (req, res) => {
-      try{
+      try {
         const podaci = req.body;
         const rezultat = await kolekcije.korisnik.findOne(
-          {korisnicko_ime: podaci.korisnicko_ime, lozinka: podaci.lozinka}
+          { korisnicko_ime: podaci.korisnicko_ime, lozinka: podaci.lozinka }
         );
 
-        if(rezultat != null) {
+        if (rezultat != null) {
           res.status(200).json(rezultat); //login uspjesan
         }
         else {
           res.status(401).json(rezultat); //login neuspjesan
         }
-        
-      } catch(error) {
+
+      } catch (error) {
         console.error("Greška u loginu: ", error);
         res.status(500).json({ error: "Greška u loginu!" });
       }
     });
 
     app.post("/api/dodavanjeAdmina", async (req, res) => { //za svaki slucaj
-      try{
+      try {
         const podaci = req.body;
         const rezultat = await kolekcije.administrator.insertOne(podaci);
 
         res.status(201).json(rezultat);
-      } catch(error) {
+      } catch (error) {
         console.error("Greška u dodavanju admina: ", error);
         res.status(500).json({ error: "Greška u dodavanju admina!" });
       }
@@ -212,61 +222,71 @@ MongoClient.connect(mongoURI)
 
 
     app.post("/api/dodavanjeDogadaja", async (req, res) => {
-      try{
+      try {
         const podaci = req.body;
         podaci.id_admina = new ObjectId(podaci.id_admina);
         const rezultat = await kolekcije.dogadaj.insertOne(podaci);
 
         res.status(201).json(rezultat);
-      } catch(error) {
+      } catch (error) {
         console.error("Greška u dodavanju događaja: ", error);
         res.status(500).json({ error: "Greška u dodavanju događaja!" });
       }
     });
 
     app.post("/api/dodavanjeObjava", async (req, res) => {
-      try{
+      try {
         const podaci = req.body;
         podaci.id_admina = new ObjectId(podaci.id_admina);
         const rezultat = await kolekcije.objava.insertOne(podaci);
 
         res.status(201).json(rezultat);
-      } catch(error) {
+      } catch (error) {
         console.error("Greška u dodavanju objava: ", error);
         res.status(500).json({ error: "Greška u dodavanju objava!" });
       }
     });
 
     app.post("/api/objava/:objavaId/komentiranje", async (req, res) => { //objavaId u URLu zbog ne-cacheanja
-      try{
+      try {
         const podaci = req.body;
         const rezultat = await kolekcije.objava.findOneAndUpdate(
-          {_id: new ObjectId(req.params.objavaId)},
-          {$push: {komentari: {id: podaci.id, id_korisnika: podaci.id_korisnika, korisnicko_ime: podaci.korisnicko_ime, //sto sa ovim podaci.id?
-            sadrzaj_komentara: podaci.sadrzaj_komentara, datum_komentara: podaci.datum_komentara}}},
+          { _id: new ObjectId(req.params.objavaId) },
+          {
+            $push: {
+              komentari: {
+                id: podaci.id, id_korisnika: podaci.id_korisnika, korisnicko_ime: podaci.korisnicko_ime, //sto sa ovim podaci.id?
+                sadrzaj_komentara: podaci.sadrzaj_komentara, datum_komentara: podaci.datum_komentara
+              }
+            }
+          },
           //{returnOriginal: true}
         );
 
         res.status(201).json(rezultat);
 
-      } catch(error) {
+      } catch (error) {
         console.error("Greška u komentiranju: ", error);
         res.status(500).json({ error: "Greška u komentiranju!" });
       }
-  });
+    });
 
     app.put("/api/izmjenaKorisnika/:korisnikId", async (req, res) => {
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.korisnik.findOneAndUpdate(
-          {_id: new ObjectId(req.params.korisnikId)},
-          {$set: {korisnicko_ime: podaci.korisnicko_ime, email_adresa: podaci.email_adresa, 
-            lozinka: podaci.lozinka, prima_newsletter: podaci.prima_newsletter}}
+          { _id: new ObjectId(req.params.korisnikId) },
+          {
+            $set: {
+              korisnicko_ime: podaci.korisnicko_ime, email_adresa: podaci.email_adresa,
+              lozinka: podaci.lozinka, prima_newsletter: podaci.prima_newsletter
+            }
+          }
         );
-  
+
         res.status(200).json(rezultat);
 
-      } catch(error) {
+      } catch (error) {
         console.error("Greška u izmjeni korisničkih podataka: ", error);
         res.status(500).json({ error: "Greška u izmjeni korisničkih podataka!" });
       }
@@ -276,15 +296,19 @@ MongoClient.connect(mongoURI)
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.dogadaj.findOneAndUpdate(
-          {_id: new ObjectId(req.params.dogadajId)},
-          {$set: {naziv_dogadaja: podaci.naziv_dogadaja, opis_dogadaja: podaci.opis_dogadaja, 
-            lokacija_dogadaja: podaci.lokacija_dogadaja, datum_odrzavanja: podaci.datum_odrzavanja,
-            datum_zavrsetka: podaci.datum_zavrsetka, datum_objave: podaci.datum_objave, slika_objave: podaci.slika_objave}}
+          { _id: new ObjectId(req.params.dogadajId) },
+          {
+            $set: {
+              naziv_dogadaja: podaci.naziv_dogadaja, opis_dogadaja: podaci.opis_dogadaja,
+              lokacija_dogadaja: podaci.lokacija_dogadaja, datum_odrzavanja: podaci.datum_odrzavanja,
+              datum_zavrsetka: podaci.datum_zavrsetka, datum_objave: podaci.datum_objave, slika_objave: podaci.slika_objave
+            }
+          }
         );
-  
+
         res.status(200).json(rezultat);
 
-      } catch(error) {
+      } catch (error) {
         console.error("Greška u izmjeni događaja: ", error);
         res.status(500).json({ error: "Greška u izmjeni događaja!" });
       }
@@ -294,17 +318,21 @@ MongoClient.connect(mongoURI)
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.objava.findOneAndUpdate(
-          {_id: new ObjectId(req.params.objavaId)},
-          {$set: {naziv_objave: podaci.naziv_objave, opis_objave: podaci.opis_objave, 
-            datum_objave: podaci.datum_objave, slika_objave: podaci.slika_objave, 
-            dozvoljeno_komentiranje: podaci.dozvoljeno_komentiranje}}
+          { _id: new ObjectId(req.params.objavaId) },
+          {
+            $set: {
+              naziv_objave: podaci.naziv_objave, opis_objave: podaci.opis_objave,
+              datum_objave: podaci.datum_objave, slika_objave: podaci.slika_objave,
+              dozvoljeno_komentiranje: podaci.dozvoljeno_komentiranje
+            }
+          }
         );
 
         res.status(200).json(rezultat);
 
-      } catch(error) {
+      } catch (error) {
         console.error("Greška u izmjeni objave: ", error);
-        res.status(500).json({error: "Greška u izmjeni objave!"});
+        res.status(500).json({ error: "Greška u izmjeni objave!" });
       }
     });
 
@@ -317,7 +345,7 @@ MongoClient.connect(mongoURI)
         res.status(200).json(rezultat);
       } catch (error) {
         console.error("Greška u brisanju korisnika: ", error);
-        res.status(500).json({error: "Greška u brisanju korisnika!"});
+        res.status(500).json({ error: "Greška u brisanju korisnika!" });
       }
     });
 
@@ -330,7 +358,7 @@ MongoClient.connect(mongoURI)
         res.status(200).json(rezultat);
       } catch (error) {
         console.error("Greška u brisanju objave: ", error);
-        res.status(500).json({error: "Greška u brisanju objave!"});
+        res.status(500).json({ error: "Greška u brisanju objave!" });
       }
     });
 
@@ -343,27 +371,27 @@ MongoClient.connect(mongoURI)
         res.status(200).json(rezultat);
       } catch (error) {
         console.error("Greška u brisanju događaja: ", error);
-        res.status(500).json({error: "Greška u brisanju događaja!"});
+        res.status(500).json({ error: "Greška u brisanju događaja!" });
       }
     });
 
     app.delete("/api/objava/:objavaId/brisanjeKomentara/:komentarId", async (req, res) => {
-      try{
+      try {
         const rezultat = await kolekcije.objava.findOneAndUpdate(
-          {_id: new ObjectId(req.params.objavaId)},
-          {$pull: {komentari: {id: req.params.komentarId}}}
+          { _id: new ObjectId(req.params.objavaId) },
+          { $pull: { komentari: { id: req.params.komentarId } } }
         );
 
         res.status(200).json(rezultat);
 
-      } catch(error) {
+      } catch (error) {
         console.error("Greška u brisanju komentara: ", error);
         res.status(500).json({ error: "Greška u brisanju komentara!" });
       }
-  });
+    });
 
 
-})
+  })
   .catch((err) => {
     console.error("Failed to connect to MongoDB", err);
     process.exit(1);
