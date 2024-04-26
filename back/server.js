@@ -1,8 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const config = require("../back/auth.config.js");
+const authJwt = require("../back/authJwt.js");
 const { MongoClient, ObjectId } = require("mongodb");
-
 
 const app = express();
 app.use(cors());
@@ -198,7 +200,12 @@ MongoClient.connect(mongoURI)
         if (rezultat) {
           bcrypt.compare(podaci.lozinka_korisnika, rezultat.lozinka_korisnika, async function (err, bcryptRes) {
             if (bcryptRes) {
-              res.status(200).json(rezultat);
+              try {
+                const token = jwt.sign({ id_korisnika: rezultat.id_korisnika, korisnicko_ime: rezultat.korisnicko_ime}, config.secret);
+                res.status(200).json(token); //ULOGU DODAT POSLIJE
+              } catch (error) {
+                console.log("Puknuo JWT: " + error);
+              }
             } else {
               res.status(401).json(rezultat); //nije dobra lozinka
             }
@@ -225,7 +232,7 @@ MongoClient.connect(mongoURI)
     });
 
 
-    app.post("/api/dodavanjeDogadaja", async (req, res) => {
+    app.post("/api/dodavanjeDogadaja", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const podaci = req.body;
         podaci.id_admina = new ObjectId(podaci.id_admina);
@@ -251,7 +258,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.post("/api/objava/:objavaId/komentiranje", async (req, res) => { //objavaId u URLu zbog ne-cacheanja
+    app.post("/api/objava/:objavaId/komentiranje", authJwt.verifyTokenUser, async (req, res) => { //objavaId u URLu zbog ne-cacheanja
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.objava.findOneAndUpdate(
@@ -275,7 +282,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.put("/api/izmjenaKorisnika/:korisnikId", async (req, res) => {
+    app.put("/api/izmjenaKorisnika/:korisnikId", authJwt.verifyTokenUser, async (req, res) => { //DORADITI ZBOG AUTH
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.korisnik.findOneAndUpdate(
@@ -296,7 +303,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.put("/api/izmjenaDogadaja/:dogadajId", async (req, res) => {
+    app.put("/api/izmjenaDogadaja/:dogadajId", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.dogadaj.findOneAndUpdate(
@@ -318,7 +325,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.put("/api/izmjenaObjave/:objavaId", async (req, res) => {
+    app.put("/api/izmjenaObjave/:objavaId", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.objava.findOneAndUpdate(
@@ -340,7 +347,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.delete("/api/brisanjeKorisnika/:korisnikId", async (req, res) => {
+    app.delete("/api/brisanjeKorisnika/:korisnikId", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const rezultat = await kolekcije.korisnik.deleteOne({
           _id: new ObjectId(req.params.korisnikId)
@@ -353,7 +360,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.delete("/api/brisanjeObjave/:objavaId", async (req, res) => {
+    app.delete("/api/brisanjeObjave/:objavaId", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const rezultat = await kolekcije.objava.deleteOne({
           _id: new ObjectId(req.params.objavaId)
@@ -366,7 +373,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.delete("/api/brisanjeDogadaja/:dogadajId", async (req, res) => {
+    app.delete("/api/brisanjeDogadaja/:dogadajId", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const rezultat = await kolekcije.dogadaj.deleteOne({
           _id: new ObjectId(req.params.dogadajId)

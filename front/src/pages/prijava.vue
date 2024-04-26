@@ -33,14 +33,19 @@ export default {
         async prijava() {
             try {
                 const response = await axios.post("http://localhost:3000/api/login", this.podaci);
+                if (response.data) {
+                    localStorage.setItem("token", response.data); //response.data je sam token! ako se doda još neki info u response, onda ide response.data.token
+                    this.$q.notify({
+                        color: "positive",
+                        position: "top",
+                        message: "Prijava uspješna.",
+                    });
+                    this.$router.push("/pocetna").then(() => {
+                window.location.reload(); });
 
-                this.$q.notify({
-                    color: "positive",
-                    position: "top",
-                    message: "Prijava uspješna.",
-                });
-                //TU ODVESTI NA POČETNU STR - gogo
-
+                } else {
+                    throw new Error("Token nije zaprimljen!"); //neš nije dobro
+                }
             } catch (error) {
                 this.$q.notify({
                     color: "negative",
