@@ -282,7 +282,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.put("/api/izmjenaKorisnika/:korisnikId", authJwt.verifyTokenUser, async (req, res) => { //DORADITI ZBOG AUTH
+    app.put("/api/izmjenaKorisnika/:korisnikId", authJwt.verifyTokenPosebno, async (req, res) => { //DORADITI ZBOG AUTH
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.korisnik.findOneAndUpdate(
@@ -386,7 +386,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.delete("/api/objava/:objavaId/brisanjeKomentara/:komentarId", async (req, res) => {
+    app.delete("/api/objava/:objavaId/brisanjeKomentara/:komentarId", authJwt.verifyTokenAdmin, async (req, res) => { //kako ćemo s brisanjem komentara od strane kor?
       try {
         const rezultat = await kolekcije.objava.findOneAndUpdate(
           { _id: new ObjectId(req.params.objavaId) },

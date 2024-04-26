@@ -31,7 +31,8 @@ export default {
                 email_korisnika: '',
                 lozinka_korisnika: '',
                 datum_registracije: '',
-                prima_newsletter: true
+                prima_newsletter: true,
+                uloga: 1 //1 = korisnik
             },
             provjera_lozinke: ''
 
@@ -47,7 +48,7 @@ export default {
                 this.$q.notify({
                     color: "positive",
                     position: "top",
-                    message: "Registracija uspješna.",
+                    message: "Registracija uspješna. Možete se sad prijaviti.",
                 });
             } catch (error) {
                 this.$q.notify({

@@ -40,8 +40,11 @@ export default {
                         position: "top",
                         message: "Prijava uspješna.",
                     });
-                    this.$router.push("/pocetna").then(() => {
-                window.location.reload(); });
+                    setTimeout(() => {
+                        this.$router.push("/").then(() => {
+                            window.location.reload();
+                        });
+                    }, 1000); //pričeka jednu sek prije nego ode na iduću str, da se vidi notify
 
                 } else {
                     throw new Error("Token nije zaprimljen!"); //neš nije dobro

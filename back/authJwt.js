@@ -66,7 +66,7 @@ verifyTokenPosebno = (req, res, next) => {
         });
       }
       req.userId = decoded.id;
-      if (decoded.uloga === 0) {
+      if (decoded.uloga === 0 || decoded.id === req.params.id) { //ili je admin, ili je to TAJ korisnik
         next();
       } else {
         res.status(403).send({
@@ -79,5 +79,6 @@ verifyTokenPosebno = (req, res, next) => {
 const authJwt = {
   verifyTokenAdmin: verifyTokenAdmin,
   verifyTokenUser: verifyTokenUser,
+  verifyTokenPosebno: verifyTokenPosebno,
 };
 module.exports = authJwt;
