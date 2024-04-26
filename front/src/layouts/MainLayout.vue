@@ -26,12 +26,15 @@
         </q-tab>
         <template v-if="imaAdmin()">
           <q-tab name="admin">
-            <q-btn-dropdown color="primary" flat text-color="white" label="Administrator">
+            <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false"  flat text-color="white" label="Administrator">
               <q-list>
                 <q-item clickable v-close-popup @click="onItemClick('dogadajiAdmin')">
                   <q-item-section>
-                    <q-item-label>Događaji</q-item-label>
-                  </q-item-section>
+                    <router-link to="admindogadaji">
+                    <q-item-label style="color: black; text-decoration: none"
+                      >Događaji</q-item-label
+                    >
+                  </router-link>                  </q-item-section>
                 </q-item>
 
                 <q-item clickable v-close-popup @click="onItemClick('objaveAdmin')">
@@ -100,3 +103,11 @@ defineOptions({
   name: "MainLayout",
 });
 </script>
+
+
+<style>
+.btn--no-hover .q-focus-helper {
+  display: none;
+}
+</style>
+

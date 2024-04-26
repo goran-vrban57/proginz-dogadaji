@@ -6,7 +6,9 @@ const routes = [
       { path: '/', component: () => import('pages/IndexPage.vue') },
       { path: 'dogadaji', component: () => import('pages/dogadaji.vue') },
       { path: 'registracija', component: () => import('pages/registracija.vue') },
-      { path: 'prijava', component: () => import('pages/prijava.vue') }
+      { path: 'prijava', component: () => import('pages/prijava.vue') },
+      { path: 'admindogadaji', component: () => import('pages/admin_dogadaji.vue') },
+      { path: 'dodajdogadaj', component: () => import('pages/admin_dogadaj_dodavanje.vue') }
     ]
   },
 
