@@ -201,7 +201,7 @@ MongoClient.connect(mongoURI)
           bcrypt.compare(podaci.lozinka_korisnika, rezultat.lozinka_korisnika, async function (err, bcryptRes) {
             if (bcryptRes) {
               try {
-                const token = jwt.sign({ id_korisnika: rezultat.id_korisnika, korisnicko_ime: rezultat.korisnicko_ime}, config.secret);
+                const token = jwt.sign({ id_korisnika: rezultat.id_korisnika, korisnicko_ime: rezultat.korisnicko_ime, uloga: rezultat.uloga}, config.secret);
                 res.status(200).json(token); //ULOGU DODAT POSLIJE
               } catch (error) {
                 console.log("Puknuo JWT: " + error);

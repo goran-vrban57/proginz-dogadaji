@@ -16,6 +16,7 @@
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
     "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "quasar": "^2.8.0",
     "vue": "^3.4.18",
     "vue-router": "^4.0.12"
