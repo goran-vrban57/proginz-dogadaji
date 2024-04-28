@@ -3,25 +3,32 @@ zapisati osnovne informacije o dogadaju, moze ubaciti i sliku. -->
 <template>
     <q-page style="margin-left: 2%; margin-right: 2%" window-height window-width>
         <div class="row">
-            <h5 ref="h_korisnik" class="text-h3 text-blue q-my-md">Dodaj događaj</h5>
+            <h5 class="text-h3 text-primary q-my-md">Dodaj događaj</h5>
         </div>
         <q-form @submit="provjeraPolja()" class="q-gutter-md">
             <q-input v-model="dogadaj.naziv_dogadaja" label="Naziv događaja" outlined dense type="text" />
-            <q-input v-model="dogadaj.opis_dogadaja" label="Opis događaja" outlined dense type="text" />
+            <q-input v-model="dogadaj.opis_dogadaja" outlined dense autogrow clearable label="Opis događaja"
+                :shadow-text="textareaShadowText" />
             <q-input v-model="dogadaj.lokacija_dogadaja" label="Lokacija događaja" outlined dense type="text" />
-            <q-input v-model="dogadaj.datum_odrzavanja" label="Datum održavanja" outlined dense type="text" />
-            <q-input v-model="dogadaj.datum_zavrsetka" label="Datum završetka" outlined dense type="text" />
-            <q-input v-model="dogadaj.datum_objave" label="Datum objave" outlined dense type="text" />
-            <q-input v-model="dogadaj.slika_dogadaja" label="Adresa" outlined dense type="text" />
+            <q-checkbox v-model="viseDana" label="Događaj traje više dana?" color="primary" true-value="yes"
+                false-value="no" /> <br>
+            <q-date v-model="dogadaj.datum_odrzavanja" title="Datum održavanja" setToday mask="DD.MM.YYYY"></q-date>
+            <template v-if="viseDana == 'yes'">
+                <q-date v-model="dogadaj.datum_zavrsetka" title="Datum završetka" setToday mask="DD.MM.YYYY"></q-date>
+            </template>
+            <q-input  v-model="dogadaj.vrijeme_odrzavanja" label="Vrijeme održavanja" outlined dense style="width: 300px;" type="time">
+            </q-input>
             <div>
-                <input type="file" name="file" accept="image/*" @change="convertImage($event)"/>
+                <label for="file-upload" class="custom-file-upload">
+                    <input type="file" name="file" accept="image/*" @change="convertImage($event)" />
+                </label>
                 <div v-if="base64String">
                     <img :src="base64String" />
                 </div>
                 <p>Ograničenje veličine slike je 2 MB.</p>
             </div>
 
-            <q-btn type="submit" label="Dodaj" color="primary" class="q-mt-md" />
+            <q-btn type="submit" label="Dodaj" color="primary" class="q-my-md" />
         </q-form>
     </q-page>
 </template>
@@ -29,20 +36,25 @@ zapisati osnovne informacije o dogadaju, moze ubaciti i sliku. -->
 <script>
 import axios from "axios";
 import imageCompression from "browser-image-compression";
+import { date } from "quasar";
+import { ref } from "vue"
 export default {
     data() {
         return {
+            viseDana: ref('no'),
             dogadaj: {
                 naziv_dogadaja: "",
                 opis_dogadaja: "",
                 lokacija_dogadaja: "",
                 datum_odrzavanja: "",
                 datum_zavrsetka: "", //neovisan
-                datum_objave: "",
+                datum_objave: "", //automatski dodjeljen
+                vrijeme_odrzavanja: "",
                 slika_dogadaja: "", //neovisan
             },
             file: null,
             base64String: null,
+            currentDate: new Date(),
 
         };
     },
@@ -50,20 +62,42 @@ export default {
     mounted() {
         const token = localStorage.getItem("token");
         const headers = { Authorization: `Bearer ${token}` };
+
+        const formattedDate = date.formatDate(new Date(), "DD.MM.YYYY");
+        this.dogadaj.datum_objave = formattedDate;
+
     },
 
     methods: {
         provjeraPolja() {
             if (this.dogadaj.naziv_dogadaja == "" || this.dogadaj.opis_dogadaja == ""
                 || this.dogadaj.lokacija_dogadaja == "" || this.dogadaj.datum_odrzavanja == ""
-                || this.dogadaj.datum_objave == "") {
+                || this.dogadaj.datum_objave == "" || this.dogadaj.vrijeme_odrzavanja == "") {
                 this.$q.notify({
                     color: "negative",
                     position: "top",
                     message: "Nisu unesena sva potrebna polja.",
                     icon: "warning",
                 });
+            } else if (this.dogadaj.datum_odrzavanja < this.dogadaj.datum_objave) {
+                this.$q.notify({
+                    color: "negative",
+                    position: "top",
+                    message: "Datum održavanja ne može biti manji od današnjeg datuma.",
+                    icon: "warning",
+                });
+            } else if ((this.dogadaj.datum_odrzavanja > this.dogadaj.datum_zavrsetka) && this.viseDana == 'yes') {
+                this.$q.notify({
+                    color: "negative",
+                    position: "top",
+                    message: "Datum početka održavanja ne može biti veći od datuma završetka događaja.",
+                    icon: "warning",
+                });
             } else {
+                if (this.viseDana == 'no') {
+                    this.dogadaj.datum_zavrsetka = "";
+                }
+
                 this.dodajDogadaj();
             }
         },
