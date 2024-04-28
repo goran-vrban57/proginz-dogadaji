@@ -17,24 +17,29 @@
           </router-link>
         </template>
       </q-toolbar>
-      <q-tabs v-model="tab" inline-label class="bg-primary text-white">
-        <q-tab name="dogadaj">
-          <span style="font-size: 14px">Događaj</span>
-        </q-tab>
-        <q-tab name="objave">
-          <span style="font-size: 14px">Objave</span>
-        </q-tab>
+      <q-tabs inline-label class="bg-primary text-white">
+        <router-link to="dogadaji">
+          <q-tab name="dogadaj">
+            <span style="font-size: 14px">Događaj</span>
+            <!--izgled je kao link nazalost, mozda CSS stil da bude cisti tekst-->
+          </q-tab>
+        </router-link>
+        <router-link to="objave">
+          <q-tab name="objave">
+            <span style="font-size: 14px">Objave</span>
+          </q-tab>
+        </router-link>
+
         <template v-if="imaAdmin()">
           <q-tab name="admin">
-            <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false"  flat text-color="white" label="Administrator">
+            <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false" flat text-color="white"
+              label="Administrator">
               <q-list>
                 <q-item clickable v-close-popup @click="onItemClick('dogadajiAdmin')">
                   <q-item-section>
                     <router-link to="admindogadaji">
-                    <q-item-label style="color: black; text-decoration: none"
-                      >Događaji</q-item-label
-                    >
-                  </router-link>                  </q-item-section>
+                      <q-item-label style="color: black; text-decoration: none">Događaji</q-item-label>
+                    </router-link> </q-item-section>
                 </q-item>
 
                 <q-item clickable v-close-popup @click="onItemClick('objaveAdmin')">
@@ -64,7 +69,7 @@
 
 <script setup>
 import { ref } from "vue";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const token = localStorage.getItem("token");
 
@@ -83,7 +88,7 @@ const imaAdmin = () => {
     return false;
 
   } catch (error) {
-    if(error.name !== "InvalidTokenError" ) { //da ne logga grešku za nepostojeći token bzvz
+    if (error.name !== "InvalidTokenError") { //da ne logga grešku za nepostojeći token bzvz
       console.log("Greška pri određivanju uloge: " + error);
     }
   }
@@ -110,4 +115,3 @@ defineOptions({
   display: none;
 }
 </style>
-
