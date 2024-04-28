@@ -16,7 +16,8 @@ zapisati osnovne informacije o dogadaju, moze ubaciti i sliku. -->
             <template v-if="viseDana == 'yes'">
                 <q-date v-model="dogadaj.datum_zavrsetka" title="Datum završetka" setToday mask="DD.MM.YYYY"></q-date>
             </template>
-            <q-input  v-model="dogadaj.vrijeme_odrzavanja" label="Vrijeme održavanja" outlined dense style="width: 300px;" type="time">
+            <q-input v-model="dogadaj.vrijeme_odrzavanja" label="Vrijeme održavanja" outlined dense
+                style="width: 300px;" type="time">
             </q-input>
             <div>
                 <label for="file-upload" class="custom-file-upload">
@@ -79,26 +80,38 @@ export default {
                     message: "Nisu unesena sva potrebna polja.",
                     icon: "warning",
                 });
-            } else if (this.dogadaj.datum_odrzavanja < this.dogadaj.datum_objave) {
-                this.$q.notify({
-                    color: "negative",
-                    position: "top",
-                    message: "Datum održavanja ne može biti manji od današnjeg datuma.",
-                    icon: "warning",
-                });
-            } else if ((this.dogadaj.datum_odrzavanja > this.dogadaj.datum_zavrsetka) && this.viseDana == 'yes') {
-                this.$q.notify({
-                    color: "negative",
-                    position: "top",
-                    message: "Datum početka održavanja ne može biti veći od datuma završetka događaja.",
-                    icon: "warning",
-                });
             } else {
-                if (this.viseDana == 'no') {
-                    this.dogadaj.datum_zavrsetka = "";
-                }
 
-                this.dodajDogadaj();
+                var brojeviDatumaObjave = this.dogadaj.datum_objave.split('.');
+                var brojeviDatumaOdrzavanja = this.dogadaj.datum_odrzavanja.split('.');
+                var brojeviDatumaZavrsetka = this.dogadaj.datum_zavrsetka.split('.');
+
+                /* console.log("Brojevi datuma objave: " + brojeviDatumaObjave);
+                console.log("Brojevi datuma odrzavanja: " + brojeviDatumaOdrzavanja);
+                console.log("Brojevi datuma zavrsetka: " + brojeviDatumaZavrsetka); */
+
+                if (this.usporedbaDatuma(brojeviDatumaOdrzavanja, brojeviDatumaObjave)) { //ako je datum odrzavanja prije od datuma objave
+                    this.$q.notify({
+                        color: "negative",
+                        position: "top",
+                        message: "Datum održavanja ne može biti manji od današnjeg datuma.",
+                        icon: "warning",
+                    });
+                } else if ((this.usporedbaDatuma(brojeviDatumaZavrsetka, brojeviDatumaOdrzavanja)) && this.viseDana == 'yes') { 
+                    //ako je datum zavrsetka prije datuma odrzavanja ^
+                    this.$q.notify({
+                        color: "negative",
+                        position: "top",
+                        message: "Datum početka održavanja ne može biti veći od datuma završetka događaja.",
+                        icon: "warning",
+                    });
+                } else {
+                    if (this.viseDana == 'no') {
+                        this.dogadaj.datum_zavrsetka = "";
+                    }
+
+                    this.dodajDogadaj();
+                }
             }
         },
 
@@ -129,6 +142,31 @@ export default {
             setTimeout(() => {
                 window.history.back();
             }, 500);
+        },
+
+        usporedbaDatuma(array1, array2) {
+            //[0] dani
+            //[1] mjeseci
+            //[2] godine
+            if (array1.length !== array2.length) {
+                console.log("Polja imaju različiti broj elemenata.");
+                return false;
+            } else {
+                if (array1[2] < array2[2]) { // provjera godina
+                    return true;
+                } else if (array1[2] === array2[2]) { // ako su godine jednake provjeri mjesece
+                    if (array1[1] < array2[1]) {
+                        return true;
+                    } else if (array1[1] === array2[1]) { // ako su mjeseci jednaki provjeri dane
+                        if (array1[0] < array2[0]) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+
         },
 
         //od tu nadalje za SLIKU kod
