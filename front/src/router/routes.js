@@ -10,7 +10,10 @@ const routes = [
       { path: 'registracija', component: () => import('pages/registracija.vue') },
       { path: 'prijava', component: () => import('pages/prijava.vue') },
       { path: 'admindogadaji', component: () => import('pages/admin_dogadaji.vue') },
-      { path: 'dodajdogadaj', component: () => import('pages/admin_dogadaj_dodavanje.vue') }
+      { path: 'dodajdogadaj', component: () => import('pages/admin_dogadaj_dodavanje.vue') },
+      { name: 'izmjenadogadaj', path: 'izmjenadogadaj/:id', component: () => import('pages/admin_dogadaj_detalji.vue')}, //korisiti name ili samo path?
+      { path: 'adminobjave', component: () => import('pages/admin_objave.vue') },
+      
     ]
   },
 

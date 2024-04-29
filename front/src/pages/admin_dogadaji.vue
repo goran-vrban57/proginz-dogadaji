@@ -19,7 +19,7 @@ Uz svaku od stavki koje ce biti u sklopu tablice nalaziti ce se i gumbovi za izm
         <template v-slot:body-cell-gumbovi="props">
           <q-btn-group spread>
             <q-btn color="primary" label="Izmijeni" @click="odiNaDetalje(props.row._id)" />
-            <q-btn color="red" label="Obriši" @click="obrisiDogadaj(props.row._id)" />
+            <q-btn color="red" label="Obriši" @click="brisanje(props.row._id)" />
           </q-btn-group>
         </template>
       </q-table>
@@ -87,17 +87,14 @@ export default {
         const response = await axios.get("http://localhost:3000/api/dogadaj");
         console.log("Response podaci:", response.data);
 
-      //const formatter = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-       //response.data.datum_odrzavanja = formatter.format(response.data.datum_odrzavanja);
-
         this.dogadaji = response.data;
       } catch (error) {
         console.error("Greška pri dohvatu događaja", error);
       }
     },
 
-    odiNaDetalje(id) {
-      this.$router.push({});
+    odiNaDetalje(idDogadaja){
+      this.$router.push({name: 'izmjenadogadaj', params: {id: idDogadaja}});
     },
 
     dodajDogadaj(){
@@ -128,7 +125,15 @@ export default {
           icon: "warning",
         });
       }
-    }
+    },
+
+    brisanje(id) {
+            if (window.confirm("Jeste li sigurni da se želite obrisati događaj?")) {
+                this.obrisiDogadaj(id);
+                window.location.reload();
+                return;
+            }
+        },
 
   },
 };

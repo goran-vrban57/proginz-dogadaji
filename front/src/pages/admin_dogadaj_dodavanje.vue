@@ -8,7 +8,7 @@ zapisati osnovne informacije o dogadaju, moze ubaciti i sliku. -->
         <q-form @submit="provjeraPolja()" class="q-gutter-md">
             <q-input v-model="dogadaj.naziv_dogadaja" label="Naziv događaja" outlined dense type="text" />
             <q-input v-model="dogadaj.opis_dogadaja" outlined dense autogrow clearable label="Opis događaja"
-                :shadow-text="textareaShadowText" />
+                />
             <q-input v-model="dogadaj.lokacija_dogadaja" label="Lokacija događaja" outlined dense type="text" />
             <q-checkbox v-model="viseDana" label="Događaj traje više dana?" color="primary" true-value="yes"
                 false-value="no" /> <br>
@@ -23,13 +23,14 @@ zapisati osnovne informacije o dogadaju, moze ubaciti i sliku. -->
                 <label for="file-upload" class="custom-file-upload">
                     <input type="file" name="file" accept="image/*" @change="convertImage($event)" />
                 </label>
-                <div v-if="base64String">
-                    <img :src="base64String" />
+                <div v-if="base64String" class="q-py-lg">
+                    <q-img :src="base64String"/>
                 </div>
                 <p>Ograničenje veličine slike je 2 MB.</p>
             </div>
-
-            <q-btn type="submit" label="Dodaj" color="primary" class="q-my-md" />
+            <div class="text-center q-py-xl">
+                <q-btn size="lg" type="submit" label="Dodaj događaj" color="primary" />
+            </div>
         </q-form>
     </q-page>
 </template>
@@ -73,7 +74,8 @@ export default {
         provjeraPolja() {
             if (this.dogadaj.naziv_dogadaja == "" || this.dogadaj.opis_dogadaja == ""
                 || this.dogadaj.lokacija_dogadaja == "" || this.dogadaj.datum_odrzavanja == ""
-                || this.dogadaj.datum_objave == "" || this.dogadaj.vrijeme_odrzavanja == "") {
+                || this.dogadaj.datum_objave == "" || this.dogadaj.vrijeme_odrzavanja == "" 
+                || (this.viseDana=='yes' && this.dogadaj.datum_zavrsetka=="")) {
                 this.$q.notify({
                     color: "negative",
                     position: "top",
@@ -97,7 +99,7 @@ export default {
                         message: "Datum održavanja ne može biti manji od današnjeg datuma.",
                         icon: "warning",
                     });
-                } else if ((this.usporedbaDatuma(brojeviDatumaZavrsetka, brojeviDatumaOdrzavanja)) && this.viseDana == 'yes') { 
+                } else if ((this.usporedbaDatuma(brojeviDatumaZavrsetka, brojeviDatumaOdrzavanja)) && this.viseDana == 'yes') {
                     //ako je datum zavrsetka prije datuma odrzavanja ^
                     this.$q.notify({
                         color: "negative",
@@ -107,6 +109,9 @@ export default {
                     });
                 } else {
                     if (this.viseDana == 'no') {
+                        this.dogadaj.datum_zavrsetka = "";
+                    }
+                    else if (this.viseDana == 'yes' && this.dogadaj.datum_odrzavanja == this.dogadaj.datum_zavrsetka) {
                         this.dogadaj.datum_zavrsetka = "";
                     }
 
