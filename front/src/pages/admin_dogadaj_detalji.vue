@@ -31,16 +31,18 @@ admin_dogadaji -> gumb Izmijeni pokraj pojedinog dogadaja. Podaci o dogadaju su 
                 style="width: 300px;" type="time">
             </q-input>
             <p ref="p_vrijeme_odrzavanja" style="font-weight: bold;"></p>
+
+            <!--slika pocinje ovdje-->
             <div>
                 <label for="file-upload" class="custom-file-upload">
                     <input type="file" name="file" accept="image/*" @change="convertImage($event)" />
                 </label>
-                <p>Trenutna slika:</p>
                 <div v-if="base64String" class="q-py-lg">
-                    <q-img :src="base64String" :key="base64String" />
+                    <q-img :src="base64String"/>
                 </div>
                 <p>Ograničenje veličine slike je 2 MB.</p>
             </div>
+
             <div class="text-center q-py-xl">
                 <q-btn size="lg" type="submit" label="Izmijeni događaj" color="primary" />
             </div>

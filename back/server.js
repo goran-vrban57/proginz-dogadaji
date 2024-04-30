@@ -312,7 +312,7 @@ MongoClient.connect(mongoURI)
             $set: {
               naziv_dogadaja: podaci.naziv_dogadaja, opis_dogadaja: podaci.opis_dogadaja,
               lokacija_dogadaja: podaci.lokacija_dogadaja, datum_odrzavanja: podaci.datum_odrzavanja,
-              datum_zavrsetka: podaci.datum_zavrsetka, datum_objave: podaci.datum_objave, slika_objave: podaci.slika_objave
+              datum_zavrsetka: podaci.datum_zavrsetka, datum_objave: podaci.datum_objave, slika_dogadaja: podaci.slika_dogadaja
             }
           }
         );
