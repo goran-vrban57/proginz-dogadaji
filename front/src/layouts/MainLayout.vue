@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-toolbar-title>Promo</q-toolbar-title>
         <template v-if="!imaToken()">
-          <router-link to="prijava" class="link-style">
+          <router-link to="/prijava" class="link-style">
             <q-btn flat label="Prijava" class="q-px-lg" style="color: white" />
           </router-link>
           <router-link to="/registracija" class="link-style">
@@ -18,13 +18,13 @@
         </template>
       </q-toolbar>
       <q-tabs inline-label class="bg-primary text-white">
-        <router-link to="dogadaji" style="text-decoration: none; color: inherit">
+        <router-link to="/dogadaji" style="text-decoration: none; color: inherit">
           <q-tab name="dogadaj">
             <span style="font-size: 14px">Događaj</span>
             <!--izgled je kao link nazalost, mozda CSS stil da bude cisti tekst-->
           </q-tab>
         </router-link>
-        <router-link to="objave" style="text-decoration: none; color: inherit">
+        <router-link to="/objave" style="text-decoration: none; color: inherit">
           <q-tab name="objave">
             <span style="font-size: 14px">Objave</span>
           </q-tab>
@@ -32,12 +32,12 @@
 
         <template v-if="imaAdmin()">
           <q-tab name="admin">
-            <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false" flat text-color="white"
+            <q-btn-dropdown stretch color="primary" class="btn--no-hover" :ripple="false" flat text-color="white"
               label="Administrator">
               <q-list>
                 <q-item clickable v-close-popup>
                   <q-item-section>
-                    <router-link to="admindogadaji" style="text-decoration: none; color: inherit">
+                    <router-link to="/admindogadaji" style="text-decoration: none; color: inherit">
                       <q-item-label>Događaji</q-item-label>
                     </router-link>
                   </q-item-section>
@@ -45,7 +45,7 @@
 
                 <q-item clickable v-close-popup>
                   <q-item-section>
-                    <router-link to='adminobjave' style="text-decoration: none; color: inherit;">
+                    <router-link to='/adminobjave' style="text-decoration: none; color: inherit;">
                       <q-item-label>Objave</q-item-label>
                     </router-link>
                   </q-item-section>

@@ -2,8 +2,8 @@
 Komentiranje na dogadanja nije moguce. -->
 
 <template>
-        <div class="q-px-xl q-py-md flex flex-center">
-            <q-img v-if="dogadaj.slika_dogadaja" :src="dogadaj.slika_dogadaja" no-native-menu />
+            <div class="q-px-xl q-py-md flex flex-center">
+            <q-img v-if="dogadaj.slika_dogadaja" :src="dogadaj.slika_dogadaja" no-native-menu style="height:500px"/>
         </div>
         <div class="q-px-xl q-py-md flex flex-center">
             <q-item-section class="row">
