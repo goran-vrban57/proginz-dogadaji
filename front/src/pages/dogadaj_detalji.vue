@@ -3,7 +3,8 @@ Komentiranje na dogadanja nije moguce. -->
 
 <template>
         <div class="q-px-xl q-py-md flex flex-center">
-            <q-img v-if="dogadaj.slika_dogadaja" :src="dogadaj.slika_dogadaja" no-native-menu />
+            <q-img v-if="dogadaj.slika_dogadaja" :src="dogadaj.slika_dogadaja" no-native-menu class="q-mt-lg"
+            style="border-radius: 50px; height: 500px; box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.35);"/>
         </div>
         <div class="q-px-xl q-py-md flex flex-center">
             <q-item-section class="row">

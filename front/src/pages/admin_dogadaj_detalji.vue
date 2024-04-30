@@ -17,10 +17,8 @@ admin_dogadaji -> gumb Izmijeni pokraj pojedinog dogadaja. Podaci o dogadaju su 
 
             <p ref="p_datum_objave" style="font-weight: bold;"></p>
             <p ref="p_datum_odrzavanja" style="font-weight: bold;"></p>
+            <p ref="p_datum_zavrsetka" :style="{ fontWeight: 'bold', display: viseDana === 'yes' ? 'block' : 'none' }"></p>           
 
-            <template v-if="viseDana == 'yes'">
-                <p ref="p_datum_zavrsetka" style="font-weight: bold;"></p>
-            </template>
             <q-date v-model="dogadaj_novo.datum_odrzavanja" title="Datum održavanja" setToday
                 mask="DD.MM.YYYY"></q-date>
             <template v-if="viseDana == 'yes'">

@@ -32,7 +32,7 @@
 
         <template v-if="imaAdmin()">
           <q-tab name="admin">
-            <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false" flat text-color="white"
+            <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false" auto-close stretch flat text-color="white"
               label="Administrator">
               <q-list>
                 <q-item clickable v-close-popup>
