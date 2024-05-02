@@ -26,7 +26,7 @@ zapisati osnovne informacije o dogadaju, moze ubaciti i sliku. -->
                 <div v-if="base64String" class="q-py-lg">
                     <q-img :src="base64String"/>
                 </div>
-                <p>Ograničenje veličine slike je 2 MB.</p>
+                <p>Ograničenje veličine slike je 3 MB.</p>
             </div>
             <div class="text-center q-py-xl">
                 <q-btn size="lg" type="submit" label="Dodaj događaj" color="primary" />
@@ -178,7 +178,7 @@ export default {
 
         async convertImage(e) {
             const options = {
-                maxSizeMB: 2,
+                maxSizeMB: 3,
                 maxWidthOrHeight: 1920,
                 useWebWorker: true,
             };
