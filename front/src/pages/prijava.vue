@@ -7,6 +7,10 @@
             <q-form class="q-gutter-md" @submit="provjeriPodatke">
                 <q-input square filled v-model="podaci.korisnicko_ime" type="text" label="Korisničko ime" />
                 <q-input square filled v-model="podaci.lozinka_korisnika" type="password" label="Lozinka" />
+                <vue-recaptcha v-show="true" sitekey="6Ld7P9ApAAAAAICvGeO-n5OaqDoeolIcNE5j7an8" size="normal"
+                    theme="light" hl="en" :loading-timeout="loadingTimeout" @verify="recaptchaVerified"
+                    @expire="recaptchaExpired" @fail="recaptchaFailed" @error="recaptchaError" ref="vueRecaptcha">
+                </vue-recaptcha>
                 <div class="text-center q-pt-xl"><q-btn size="lg" type="submit" label="Prijavi se" color="primary" />
                 </div>
                 <router-link to="registracija" class="link-style">
@@ -19,13 +23,19 @@
 
 <script>
 import axios from "axios";
+import vueRecaptcha from 'vue3-recaptcha2';
 export default {
+    components: {
+        vueRecaptcha
+    },
     data() {
         return {
             podaci: {
                 korisnicko_ime: '',
                 lozinka_korisnika: '',
-            }
+            },
+            loadingTimeout: 30000,
+            captchaProsla: false
         }
     },
     methods: {
@@ -61,16 +71,51 @@ export default {
         },
 
         provjeriPodatke() {
-            if (this.podaci.korisnicko_ime.trim() === '' || this.podaci.lozinka_korisnika == '') {
+            if (this.captchaProsla === false) {
                 this.$q.notify({
                     color: "negative",
                     position: "top",
-                    message: "Niste unijeli sve podatke!",
+                    message: "Niste riješili captchu!",
                     icon: "warning",
                 });
-            } else {
-                this.prijava();
+            } else { //ako je captcha riješena, ide se dalje s provjerama
+                if (this.podaci.korisnicko_ime.trim() === '' || this.podaci.lozinka_korisnika == '') {
+                    this.$q.notify({
+                        color: "negative",
+                        position: "top",
+                        message: "Niste unijeli sve podatke!",
+                        icon: "warning",
+                    });
+                } else {
+                    this.prijava();
+                }
             }
+        },
+
+        //captcha
+
+        recaptchaVerified(response) {
+            this.captchaProsla = true;
+        },
+        recaptchaExpired() {
+            this.$refs.vueRecaptcha.reset();
+            this.captchaProsla = false;
+        },
+        recaptchaFailed() {
+            this.$q.notify({
+                color: "negative",
+                position: "top",
+                message: "Captcha je došla do problema. Molimo provjerite internetsku vezu.",
+                icon: "warning",
+            });
+        },
+        recaptchaError(reason) {
+            this.$q.notify({
+                color: "negative",
+                position: "top",
+                message: "Captcha je došla do problema. Molimo osvježite stranicu.",
+                icon: "warning",
+            });
         }
     }
 }
