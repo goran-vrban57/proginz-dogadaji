@@ -12,15 +12,39 @@
           </router-link>
         </template>
         <template v-if="imaToken()">
-          <router-link to="/" class="link-style">
+          
+          <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false" auto-close stretch flat text-color="white"
+              label="Moj profil">
+              <q-list>
+                <q-item clickable v-close-popup>
+                  <q-item-section>
+                    <router-link to="/mojipodaci" style="text-decoration: none; color: inherit">
+                      <q-item-label>Moji podaci</q-item-label>
+                    </router-link>
+                  </q-item-section>
+                </q-item>
+
+                <q-item clickable v-close-popup @click="odjava()">
+                  <q-item-section>
+                    <router-link to='/' style="text-decoration: none; color: inherit;">
+                      <q-item-label>Odjava</q-item-label>
+                    </router-link>
+                  </q-item-section>
+                </q-item>
+
+                
+              </q-list>
+            </q-btn-dropdown>
+          
+         <!--  <router-link to="/" class="link-style">
             <q-btn flat label="Odjava" class="q-pa-sm" style="color: white" @click="odjava()" />
-          </router-link>
+          </router-link> -->
         </template>
       </q-toolbar>
       <q-tabs inline-label class="bg-primary text-white">
         <router-link to="/dogadaji" style="text-decoration: none; color: inherit">
           <q-tab name="dogadaj">
-            <span style="font-size: 14px">Događaj</span>
+            <span style="font-size: 14px">Događaji</span>
             <!--izgled je kao link nazalost, mozda CSS stil da bude cisti tekst-->
           </q-tab>
         </router-link>
@@ -53,7 +77,7 @@
 
                 <q-item clickable v-close-popup>
                   <q-item-section>
-                    <router-link to="" style="text-decoration: none; color: inherit;">
+                    <router-link to="/adminkorisnici" style="text-decoration: none; color: inherit;">
                       <q-item-label>Korisnici</q-item-label>
                     </router-link>
                   </q-item-section>
