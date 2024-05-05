@@ -15,7 +15,7 @@
         text-color="white"
         unelevated
         to="/"
-        label="Go Home"
+        label="Odi na početnu stranicu"
         no-caps
       />
     </div>

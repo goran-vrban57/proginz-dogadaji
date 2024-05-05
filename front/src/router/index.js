@@ -29,9 +29,7 @@ export default route(function (/* { store, ssrContext } */) {
 
   Router.beforeEach((to, from, next) => { //za provjeru je li admin ili ne
     if (to.meta && to.meta.requiresAdmin) {
-      if (provjeriAdmin()) {
-        next();
-      } else {
+      if (!provjeriAdmin()) {
         next('/zabranjenpristup');
       }
     }
