@@ -32,7 +32,7 @@ MongoClient.connect(mongoURI)
     });
 
     //administrator
-    app.get("/api/administrator", async (req, res) => {
+    app.get("/api/administrator", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const data = await kolekcije.administrator.find().toArray();
         res.json(data);
@@ -42,7 +42,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.get("/api/administrator/:id", async (req, res) => {
+    app.get("/api/administrator/:id", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const id = req.params.id;
         const data = await kolekcije.administrator.findOne({ "_id": new ObjectId(id) });
@@ -106,7 +106,7 @@ MongoClient.connect(mongoURI)
     });
 
     //korisnik
-    app.get("/api/korisnik", async (req, res) => {
+    app.get("/api/korisnik", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const data = await kolekcije.korisnik.find().toArray();
         res.json(data);
@@ -116,7 +116,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.get("/api/korisnik/:id", async (req, res) => {
+    app.get("/api/korisnik/:id", authJwt.verifyTokenPosebno, async (req, res) => { //ako pukne, probaj sa Posebno na User
       try {
         const id = req.params.id;
         const data = await kolekcije.korisnik.findOne({ "_id": new ObjectId(id) });
@@ -132,7 +132,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.get("/api/korisnikNewsletter", async (req, res) => {
+    app.get("/api/korisnikNewsletter", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const data = await kolekcije.korisnik.find({ "prima_newsletter": true }).toArray();
         res.json(data);
@@ -201,8 +201,8 @@ MongoClient.connect(mongoURI)
           bcrypt.compare(podaci.lozinka_korisnika, rezultat.lozinka_korisnika, async function (err, bcryptRes) {
             if (bcryptRes) {
               try {
-                const token = jwt.sign({ id_korisnika: rezultat.id_korisnika, korisnicko_ime: rezultat.korisnicko_ime, uloga: rezultat.uloga}, config.secret);
-                res.status(200).json(token); //ULOGU DODAT POSLIJE
+                const token = jwt.sign({ id_korisnika: rezultat.id_korisnika, korisnicko_ime: rezultat.korisnicko_ime, uloga: rezultat.uloga }, config.secret);
+                res.status(200).json(token);
               } catch (error) {
                 console.log("Puknuo JWT: " + error);
               }
@@ -219,7 +219,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.post("/api/dodavanjeAdmina", async (req, res) => { //za svaki slucaj
+    app.post("/api/dodavanjeAdmina", authJwt.verifyTokenAdmin, async (req, res) => { //za svaki slucaj
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.administrator.insertOne(podaci);
@@ -245,7 +245,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.post("/api/dodavanjeObjava", async (req, res) => {
+    app.post("/api/dodavanjeObjava", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const podaci = req.body;
         podaci.id_admina = new ObjectId(podaci.id_admina);
@@ -282,20 +282,41 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.put("/api/izmjenaKorisnika/:korisnikId", authJwt.verifyTokenPosebno, async (req, res) => { //DORADITI ZBOG AUTH
+    app.put("/api/izmjenaKorisnika/:korisnikId", authJwt.verifyTokenPosebno, async (req, res) => {
       try {
-        const podaci = req.body;
-        const rezultat = await kolekcije.korisnik.findOneAndUpdate(
-          { _id: new ObjectId(req.params.korisnikId) },
-          {
-            $set: {
-              korisnicko_ime: podaci.korisnicko_ime, email_adresa: podaci.email_adresa,
-              lozinka: podaci.lozinka, prima_newsletter: podaci.prima_newsletter
-            }
-          }
-        );
 
-        res.status(200).json(rezultat);
+        const podaci = req.body;
+        const saltRounds = 10;
+
+        if (podaci.lozinka_korisnika != "") { //ako je lozinka unesena
+          console.log("Nova lozinka JE unesena");
+          bcrypt.hash(podaci.lozinka_korisnika, saltRounds, async function (err, hash) {
+            if (err) {
+              console.error("Greška pri hashanju lozinke:", err);
+              return response.status(500).json({ error: true, message: "Greška pri hashanju lozinke." });
+            }
+            const rezultat = await kolekcije.korisnik.findOneAndUpdate(
+              { _id: new ObjectId(req.params.korisnikId) },
+              {
+                $set: {
+                  korisnicko_ime: podaci.korisnicko_ime, email_korisnika: podaci.email_korisnika,
+                  lozinka_korisnika: hash, prima_newsletter: podaci.prima_newsletter
+                }
+              }
+            );
+            res.status(200).json(rezultat);
+          })
+        } else { //ako nema nove lozinke
+          const rezultat = await kolekcije.korisnik.findOneAndUpdate(
+            { _id: new ObjectId(req.params.korisnikId) },
+            {
+              $set: {
+                korisnicko_ime: podaci.korisnicko_ime, email_korisnika: podaci.email_korisnika, prima_newsletter: podaci.prima_newsletter
+              }
+            }
+          );
+          res.status(200).json(rezultat);
+        }
 
       } catch (error) {
         console.error("Greška u izmjeni korisničkih podataka: ", error);
@@ -347,7 +368,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.delete("/api/brisanjeKorisnika/:korisnikId", authJwt.verifyTokenAdmin, async (req, res) => {
+    app.delete("/api/brisanjeKorisnika/:korisnikId", authJwt.verifyTokenPosebno, async (req, res) => {
       try {
         const rezultat = await kolekcije.korisnik.deleteOne({
           _id: new ObjectId(req.params.korisnikId)

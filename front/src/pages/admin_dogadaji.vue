@@ -128,9 +128,8 @@ export default {
     },
 
     brisanje(id) {
-            if (window.confirm("Jeste li sigurni da se želite obrisati događaj?")) {
+            if (window.confirm("Jeste li sigurni da želite obrisati događaj?")) {
                 this.obrisiDogadaj(id);
-                window.location.reload();
                 return;
             }
         },
