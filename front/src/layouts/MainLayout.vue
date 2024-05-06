@@ -14,31 +14,29 @@
           </router-link>
         </template>
         <template v-if="imaToken()">
-          
+
           <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false" stretch flat text-color="white"
-              label="Moj profil">
-              <q-list>
-                <q-item clickable v-close-popup>
-                  <q-item-section>
-                    <router-link to="/mojipodaci" class="link-color">
-                      <q-item-label>Moji podaci</q-item-label>
-                    </router-link>
-                  </q-item-section>
-                </q-item>
+            label="Moj profil">
+            <q-list>
+              <q-item clickable v-close-popup>
+                <q-item-section>
+                  <router-link to="/mojipodaci" class="link-color">
+                    <q-item-label>Moji podaci</q-item-label>
+                  </router-link>
+                </q-item-section>
+              </q-item>
 
-                <q-item clickable v-close-popup @click="odjava()">
-                  <q-item-section>
-                    <router-link to='/' class="link-color">
-                      <q-item-label>Odjava</q-item-label>
-                    </router-link>
-                  </q-item-section>
-                </q-item>
+              <q-item clickable v-close-popup @click="odjava()">
+                <q-item-section>
+                  <q-item-label>Odjava</q-item-label>
+                </q-item-section>
+              </q-item>
 
-                
-              </q-list>
-            </q-btn-dropdown>
-          
-         <!--  <router-link to="/" class="link-style">
+
+            </q-list>
+          </q-btn-dropdown>
+
+          <!--  <router-link to="/" class="link-style">
             <q-btn flat label="Odjava" class="q-pa-sm" style="color: white" @click="odjava()" />
           </router-link> -->
         </template>
@@ -58,8 +56,8 @@
 
         <template v-if="imaAdmin()">
           <q-tab name="admin">
-            <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false" auto-close stretch flat text-color="white"
-              label="Administrator">
+            <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false" auto-close stretch flat
+              text-color="white" label="Administrator">
               <q-list>
                 <q-item clickable v-close-popup>
                   <q-item-section>
@@ -145,8 +143,8 @@ defineOptions({
   display: none;
 }
 
-.link-color{
-  text-decoration: none; 
+.link-color {
+  text-decoration: none;
   color: inherit;
 }
 </style>
