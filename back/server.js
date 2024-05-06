@@ -130,7 +130,24 @@ MongoClient.connect(mongoURI)
         console.error("Error: ", error)
         res.status(500).json({ error: "Interna greška poslužitelja." });
       }
+
     });
+    app.get("/api/korisnikSelf/:id", authJwt.verifyTokenUser, async (req, res) => { //ako pukne, probaj sa Posebno na User
+      try {
+        const id = req.params.id;
+        const data = await kolekcije.korisnik.findOne({ "_id": new ObjectId(id) });
+
+        if (!data) {
+          return res.status(404).json({ message: 'Nema rezultata.' });
+        }
+
+        res.json(data);
+      } catch (error) {
+        console.error("Error: ", error)
+        res.status(500).json({ error: "Interna greška poslužitelja." });
+      }
+    });
+
 
     app.get("/api/korisnikNewsletter", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
@@ -201,7 +218,7 @@ MongoClient.connect(mongoURI)
           bcrypt.compare(podaci.lozinka_korisnika, rezultat.lozinka_korisnika, async function (err, bcryptRes) {
             if (bcryptRes) {
               try {
-                const token = jwt.sign({ id_korisnika: rezultat.id_korisnika, korisnicko_ime: rezultat.korisnicko_ime, uloga: rezultat.uloga }, config.secret);
+                const token = jwt.sign({ id_korisnika: rezultat._id, korisnicko_ime: rezultat.korisnicko_ime, uloga: rezultat.uloga }, config.secret);
                 res.status(200).json(token);
               } catch (error) {
                 console.log("Puknuo JWT: " + error);

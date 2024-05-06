@@ -2,7 +2,9 @@
   <q-layout view="hHh lpR fFf">
     <q-header elevated class="bg-primary text-white" height-hint="98">
       <q-toolbar>
-        <q-toolbar-title>Promo</q-toolbar-title>
+        <q-toolbar-title>
+          <router-link to="/" class="link-color">Promo</router-link>
+        </q-toolbar-title>
         <template v-if="!imaToken()">
           <router-link to="/prijava" class="link-style">
             <q-btn flat label="Prijava" class="q-px-lg" style="color: white" />
@@ -13,12 +15,12 @@
         </template>
         <template v-if="imaToken()">
           
-          <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false" auto-close stretch flat text-color="white"
+          <q-btn-dropdown color="primary" class="btn--no-hover" :ripple="false" stretch flat text-color="white"
               label="Moj profil">
               <q-list>
                 <q-item clickable v-close-popup>
                   <q-item-section>
-                    <router-link to="/mojipodaci" style="text-decoration: none; color: inherit">
+                    <router-link to="/mojipodaci" class="link-color">
                       <q-item-label>Moji podaci</q-item-label>
                     </router-link>
                   </q-item-section>
@@ -26,7 +28,7 @@
 
                 <q-item clickable v-close-popup @click="odjava()">
                   <q-item-section>
-                    <router-link to='/' style="text-decoration: none; color: inherit;">
+                    <router-link to='/' class="link-color">
                       <q-item-label>Odjava</q-item-label>
                     </router-link>
                   </q-item-section>
@@ -42,13 +44,13 @@
         </template>
       </q-toolbar>
       <q-tabs inline-label class="bg-primary text-white">
-        <router-link to="/dogadaji" style="text-decoration: none; color: inherit">
+        <router-link to="/dogadaji" class="link-color">
           <q-tab name="dogadaj">
             <span style="font-size: 14px">Događaji</span>
             <!--izgled je kao link nazalost, mozda CSS stil da bude cisti tekst-->
           </q-tab>
         </router-link>
-        <router-link to="/objave" style="text-decoration: none; color: inherit">
+        <router-link to="/objave" class="link-color">
           <q-tab name="objave">
             <span style="font-size: 14px">Objave</span>
           </q-tab>
@@ -61,7 +63,7 @@
               <q-list>
                 <q-item clickable v-close-popup>
                   <q-item-section>
-                    <router-link to="/admindogadaji" style="text-decoration: none; color: inherit">
+                    <router-link to="/admindogadaji" class="link-color">
                       <q-item-label>Događaji</q-item-label>
                     </router-link>
                   </q-item-section>
@@ -69,7 +71,7 @@
 
                 <q-item clickable v-close-popup>
                   <q-item-section>
-                    <router-link to='/adminobjave' style="text-decoration: none; color: inherit;">
+                    <router-link to='/adminobjave' class="link-color">
                       <q-item-label>Objave</q-item-label>
                     </router-link>
                   </q-item-section>
@@ -77,7 +79,7 @@
 
                 <q-item clickable v-close-popup>
                   <q-item-section>
-                    <router-link to="/adminkorisnici" style="text-decoration: none; color: inherit;">
+                    <router-link to="/adminkorisnici" class="link-color">
                       <q-item-label>Korisnici</q-item-label>
                     </router-link>
                   </q-item-section>
@@ -141,5 +143,10 @@ defineOptions({
 <style>
 .btn--no-hover .q-focus-helper {
   display: none;
+}
+
+.link-color{
+  text-decoration: none; 
+  color: inherit;
 }
 </style>

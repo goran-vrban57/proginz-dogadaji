@@ -14,8 +14,9 @@ const routes = [
       { name: 'izmjenadogadaj', path: 'izmjenadogadaj/:id', component: () => import('pages/admin_dogadaj_detalji.vue'), meta: { requiresAdmin: true } }, //korisiti name ili samo path?
       { path: 'adminobjave', component: () => import('pages/admin_objave.vue'), meta: { requiresAdmin: true } },
       { path: 'adminkorisnici', component: () => import('pages/admin_korisnici.vue'), meta: { requiresAdmin: true } },
-      { path: 'mojipodaci', component: () => import('pages/korisnik_podaci.vue') },
-      { name: 'adminkorisnikdetalji', path: 'adminkorisnikdetalji/:id', component: () => import('pages/admin_korisnik_detalji.vue'), meta: { requiresAdmin: true } },
+      { path: 'mojipodaci', component: () => import('pages/korisnik_podaci.vue'), meta: {requiresUserOrAdmin: true} },
+      { path: 'mojipodacidetalji', component: () => import('pages/korisnik_podaci_detalji.vue'), meta: {requiresUserOrAdmin: true} },
+      { name: 'adminkorisnikdetalji', path: 'adminkorisnikdetalji/:id', component: () => import('pages/admin_korisnik_detalji.vue'), meta: { requiresUserOrAdmin: true } },
       { path: 'zabranjenpristup', component: () => import('pages/zabranjen_pristup.vue') }
 
       //na kraju, ako je potreban Admin token, dodati ovo, ali UNUTAR glavne zagrade: "meta: { requiresAdmin: true }"

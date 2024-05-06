@@ -8,3 +8,12 @@ export function provjeriAdmin() {
   return dekodiranToken.uloga === 0;
 };
 
+export function provjeriKorisnika() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return false;
+  }
+  const decodedToken = jwtDecode(token);
+  return decodedToken.uloga === 1;
+};
+

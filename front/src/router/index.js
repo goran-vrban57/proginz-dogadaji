@@ -1,7 +1,7 @@
 import { route } from 'quasar/wrappers'
 import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
 import routes from './routes'
-import { provjeriAdmin } from './provjeraTokena'
+import { provjeriAdmin, provjeriKorisnika } from './provjeraTokena'
 
 /*
  * If not building with SSR mode, you can
@@ -32,8 +32,18 @@ export default route(function (/* { store, ssrContext } */) {
       if (!provjeriAdmin()) {
         next('/zabranjenpristup');
       }
+      else{
+        next();
+      }
+    } else if (to.meta && to.meta.requiresUserOrAdmin){
+      if(!provjeriKorisnika() && !provjeriAdmin()){
+        next('/zabranjenpristup');
+      } else{
+        next();
+      }
+    } else {
+        next();
     }
-    next();
   })
 
   return Router

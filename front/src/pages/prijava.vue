@@ -7,7 +7,7 @@
             <q-form class="q-gutter-md" @submit="provjeriPodatke">
                 <q-input square filled v-model="podaci.korisnicko_ime" type="text" label="Korisničko ime" />
                 <q-input square filled v-model="podaci.lozinka_korisnika" type="password" label="Lozinka" />
-                <vue-recaptcha v-show="true" sitekey="6Ld7P9ApAAAAAICvGeO-n5OaqDoeolIcNE5j7an8" size="normal"
+                <vue-recaptcha class="captcha" v-show="true" sitekey="6Ld7P9ApAAAAAICvGeO-n5OaqDoeolIcNE5j7an8" size="normal"
                     theme="light" hl="en" :loading-timeout="loadingTimeout" @verify="recaptchaVerified"
                     @expire="recaptchaExpired" @fail="recaptchaFailed" @error="recaptchaError" ref="vueRecaptcha">
                 </vue-recaptcha>
@@ -122,3 +122,12 @@ export default {
 
 
 </script>
+
+<style>
+.captcha{
+    margin: 0 auto; 
+    display: block; 
+    width: fit-content; 
+    padding-top: 3%;
+}
+</style>

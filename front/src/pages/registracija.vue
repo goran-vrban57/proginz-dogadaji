@@ -11,7 +11,7 @@ Korisnicko ime, e-mail adresa, lozinka/potvrdi lozinku.-->
                 <q-input square filled v-model="podaci.lozinka_korisnika" type="password" label="Lozinka" />
                 <q-input square filled v-model="provjera_lozinke" type="password" label="Ponovite lozinku" />
                 <q-checkbox v-model="podaci.prima_newsletter" label="Želim primati newsletter" />
-                <vue-recaptcha v-show="true" sitekey="6Ld7P9ApAAAAAICvGeO-n5OaqDoeolIcNE5j7an8" size="normal"
+                <vue-recaptcha class="captcha" v-show="true" sitekey="6Ld7P9ApAAAAAICvGeO-n5OaqDoeolIcNE5j7an8" size="normal"
                     theme="light" hl="en" :loading-timeout="loadingTimeout" @verify="recaptchaVerified"
                     @expire="recaptchaExpired" @fail="recaptchaFailed" @error="recaptchaError" ref="vueRecaptcha">
                 </vue-recaptcha>
@@ -138,3 +138,13 @@ export default {
 
 
 </script>
+
+<style>
+.captcha{
+    margin: 0 auto; /* horizontally center */
+    display: block; /* ensure it's treated as a block element */
+    width: fit-content; /* adjust width based on content */
+    padding-top: 3%;
+
+}
+</style>
