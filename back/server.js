@@ -275,15 +275,15 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.post("/api/objava/:objavaId/komentiranje", authJwt.verifyTokenUser, async (req, res) => { //objavaId u URLu zbog ne-cacheanja
+    app.post("/api/objava/komentiranje", authJwt.verifyTokenUser, async (req, res) => { //objavaId u URLu zbog ne-cacheanja
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.objava.findOneAndUpdate(
-          { _id: new ObjectId(req.params.objavaId) },
+          { _id: new ObjectId(podaci.id_objave) },
           {
             $push: {
               komentari: {
-                id: podaci.id, id_korisnika: podaci.id_korisnika, korisnicko_ime: podaci.korisnicko_ime, //sto sa ovim podaci.id?
+                id_komentara: podaci.id_komentara, id_korisnika: podaci.id_korisnika, ime_korisnika: podaci.ime_korisnika,
                 sadrzaj_komentara: podaci.sadrzaj_komentara, datum_komentara: podaci.datum_komentara
               }
             }

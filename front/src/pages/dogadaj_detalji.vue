@@ -8,7 +8,7 @@ Komentiranje na dogadanja nije moguce. -->
         </div>
         <div class="q-px-xl q-py-md flex flex-center">
             <q-item-section class="row">
-                <q-item class="q-pa-sm text-bold text-orange">{{ dogadaj.naziv_dogadaja }} </q-item>
+                <q-item class="q-pa-sm text-bold text-orange text-h4">{{ dogadaj.naziv_dogadaja }} </q-item>
                 <q-item class="q-pa-sm text-bold text-accent">{{ dogadaj.lokacija_dogadaja }} - {{ dogadaj.datum_odrzavanja }}, u {{ dogadaj.vrijeme_odrzavanja }}</q-item>
                 <q-item v-if="dogadaj.datum_odrzavanja!==dogadaj.datum_zavrsetka && dogadaj.datum_zavrsetka != ''"
                     class="q-pa-sm text-bold text-accent">Traje do: {{ dogadaj.datum_zavrsetka }}</q-item>
