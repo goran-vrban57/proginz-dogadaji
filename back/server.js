@@ -275,11 +275,11 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.post("/api/objava/komentiranje", authJwt.verifyTokenUser, async (req, res) => { //objavaId u URLu zbog ne-cacheanja
+    app.post("/api/objava/komentiranje/:objavaId", authJwt.verifyTokenUser, async (req, res) => { //objavaId u URLu zbog ne-cacheanja
       try {
         const podaci = req.body;
         const rezultat = await kolekcije.objava.findOneAndUpdate(
-          { _id: new ObjectId(podaci.id_objave) },
+          { _id: new ObjectId(req.params.objavaId) },
           {
             $push: {
               komentari: {
@@ -424,11 +424,13 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.delete("/api/objava/:objavaId/brisanjeKomentara/:komentarId", authJwt.verifyTokenAdmin, async (req, res) => { //kako ćemo s brisanjem komentara od strane kor?
+    app.delete("/api/objava/:objavaId/brisanjeKomentara/:komentarId", authJwt.verifyTokenPosebno, async (req, res) => {
       try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decodedToken = jwt.verify(token, config.secret);
         const rezultat = await kolekcije.objava.findOneAndUpdate(
           { _id: new ObjectId(req.params.objavaId) },
-          { $pull: { komentari: { id: req.params.komentarId } } }
+          { $pull: { "komentari": { id_komentara: parseInt(req.params.komentarId), id_korisnika: decodedToken.id_korisnika } } }
         );
 
         res.status(200).json(rezultat);
@@ -439,12 +441,34 @@ MongoClient.connect(mongoURI)
       }
     });
 
+    app.put("/api/objava/:objavaId/izmjenaKomentara/:komentarId", authJwt.verifyTokenPosebno, async (req, res) => {
+      try {
+        const podaci = req.body;
+        const rezultat = await kolekcije.objava.findOneAndUpdate(
+          { _id: new ObjectId(req.params.objavaId), "komentari.id_komentara": parseInt(req.params.komentarId) },
+          {
+            $set: {
+              "komentari.$.sadrzaj_komentara": podaci.sadrzaj_komentara
+            }
+          }
+        );
+
+        res.status(200).json(rezultat);
+
+      } catch (error) {
+        console.error("Greška u izmjeni objave: ", error);
+        res.status(500).json({ error: "Greška u izmjeni objave!" });
+      }
+    });
+
 
   })
   .catch((err) => {
     console.error("Failed to connect to MongoDB", err);
     process.exit(1);
   });
+
+
 
 
 //delete dogadaj

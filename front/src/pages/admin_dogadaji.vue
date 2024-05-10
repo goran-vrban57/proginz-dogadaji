@@ -18,7 +18,7 @@ Uz svaku od stavki koje ce biti u sklopu tablice nalaziti ce se i gumbovi za izm
         </template>
         <template v-slot:body-cell-gumbovi="props">
           <q-btn-group spread>
-            <q-btn color="primary" label="Izmijeni" icon-right="edit" @click="odiNaDetalje(props.row._id)" />
+            <q-btn color="accent" label="Izmijeni" icon-right="edit" @click="odiNaDetalje(props.row._id)" />
             <q-btn color="red" label="Obriši" icon-right="delete" @click="brisanje(props.row._id)" />
           </q-btn-group>
         </template>

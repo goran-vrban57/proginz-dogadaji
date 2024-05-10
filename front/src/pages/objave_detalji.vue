@@ -23,11 +23,19 @@ Takoder ce biti omoguceno i komentiranje u slucaju da je korisnik prijavljen. --
                 <q-item class="q-pa-sm text-bold text-accent">{{ komentar.ime_korisnika }} (komentirano {{
                     komentar.datum_komentara }}.) </q-item>
                 <q-item class="q-pa-sm">{{ komentar.sadrzaj_komentara }} </q-item>
+                <div v-if="token && komentar.izmjenaOtvorena && trenutnoOtvorenZaIzmjenu === komentar.id_komentara"
+                    class="q-pa-sm">
+                    <q-input v-model="izmijenjen_sadrzaj" outlined dense autogrow clearable
+                        label="Izmijenite komentar" />
+                    <q-btn color="accent" label="Postavi izmjenu" @click="izmijeniKomentar(komentar)" />
+                </div>
 
                 <q-card-actions v-if="imaDozvoluEditing(komentar)">
                     <!--ovo bi smio moci samo onaj ciji je to kom ili admin-->
-                    <q-btn color="accent" icon-right="edit" label="Izmijeni komentar" @click="izmijeniKomentar()" />
-                    <q-btn color="negative" icon-right="delete" label="Obriši komentar" @click="obrisiKomentar()" />
+                    <q-btn color="accent" class="q-mt-sm" icon-right="edit" label="Izmijeni"
+                        @click="otvoriZaIzmjenu(komentar)" />
+                    <q-btn color="negative" class="q-mt-sm" icon-right="delete" label="Obriši"
+                        @click="obrisiKomentar(komentar.id_komentara)" />
                 </q-card-actions>
             </q-card>
         </div>
@@ -59,6 +67,8 @@ export default {
             novi_komentar: {},
             komentari: {},
             token: "",
+            trenutnoOtvorenZaIzmjenu: "",
+            izmijenjen_sadrzaj: ""
         }
     },
 
@@ -89,6 +99,17 @@ export default {
         otvoriZaDodavanje() {
             this.dodavanjeOtvoreno = true;
         },
+        otvoriZaIzmjenu(komentar) {
+            if (this.trenutnoOtvorenZaIzmjenu === komentar.id_komentara) { //evidentira se koji je trenutno otvoren da ih ne može biti više
+                this.trenutnoOtvorenZaIzmjenu = null;
+            } else {
+                this.trenutnoOtvorenZaIzmjenu = komentar.id_komentara;
+            }
+            this.izmijenjen_sadrzaj = komentar.sadrzaj_komentara; //trenutni komentar se priprema za izmjenu
+            komentar.izmjenaOtvorena === true ? komentar.izmjenaOtvorena = false : komentar.izmjenaOtvorena = true;
+            //ako je polje za izmjenu vec otvoreno, zatvori ga; inace ga otvori     
+
+        },
         async dodajKomentar() {
             if (this.novi_komentar.sadrzaj_komentara === "") {
                 this.$q.notify({
@@ -108,11 +129,10 @@ export default {
                 this.novi_komentar.id_korisnika = dekodiranToken.id_korisnika; //provjeriti jer id mijenja naziv
                 this.novi_komentar.ime_korisnika = dekodiranToken.korisnicko_ime;
                 this.novi_komentar.datum_komentara = date.formatDate(new Date(), "DD.MM.YYYY");
-                this.novi_komentar.id_objave = this.id_objave;
 
                 try {
                     console.log(this.novi_komentar);
-                    const response = await axios.post("http://localhost:3000/api/objava/komentiranje", this.novi_komentar, { headers });
+                    const response = await axios.post("http://localhost:3000/api/objava/komentiranje/" + this.id_objave, this.novi_komentar, { headers });
                     this.komentari = this.objava.komentari;
 
                     this.$q.notify({
@@ -129,6 +149,59 @@ export default {
                         icon: "warning",
                     });
                 }
+            }
+        },
+        async obrisiKomentar(id_komentara) {
+            if (window.confirm("Jeste li sigurni da želite obrisati komentar?")) {
+                try {
+                    const headers = { Authorization: `Bearer ${this.token}` };
+                    const response = await axios.delete("http://localhost:3000/api/objava/" + this.id_objave + "/brisanjeKomentara/" + id_komentara, { headers });
+
+                    this.$q.notify({
+                        color: "positive",
+                        position: "top",
+                        message: "Uspješno brisanje komentara."
+                    });
+
+                } catch (error) {
+                    console.log(error);
+                    this.$q.notify({
+                        color: "negative",
+                        position: "top",
+                        message: "Greška pri brisanju komentara!",
+                        icon: "warning",
+                    });
+                }
+            }
+        },
+        async izmijeniKomentar(komentar) {
+
+            if(this.izmijenjen_sadrzaj === "") {
+                this.$q.notify({
+                    color: "negative",
+                    position: "top",
+                    message: "Unijeli ste prazan komentar!",
+                });
+            }
+            try {
+                const headers = { Authorization: `Bearer ${this.token}` };
+                delete komentar.izmjenaOtvorena; //višak atribut
+                komentar.sadrzaj_komentara = this.izmijenjen_sadrzaj;
+
+                const response = await axios.put("http://localhost:3000/api/objava/" + this.id_objave + "/izmjenaKomentara/" + komentar.id_komentara, komentar, { headers });
+                this.$q.notify({
+                    color: "positive",
+                    position: "top",
+                    message: "Izmjena komentara uspješna!",
+                });
+
+            } catch (error) {
+                this.$q.notify({
+                    color: "negative",
+                    position: "top",
+                    message: "Neuspješna izmjena komentara.",
+                });
+                console.log(error);
             }
         }
     }
