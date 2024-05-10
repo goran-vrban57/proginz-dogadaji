@@ -40,6 +40,7 @@ import axios from "axios";
 import imageCompression from "browser-image-compression";
 import { date } from "quasar";
 import { ref } from "vue"
+import { jwtDecode } from "jwt-decode";
 export default {
     data() {
         return {
@@ -52,6 +53,7 @@ export default {
                 datum_zavrsetka: "", //neovisan
                 datum_objave: "", //automatski dodjeljen
                 vrijeme_odrzavanja: "",
+                id_admina: "",
                 slika_dogadaja: "", //neovisan
             },
             file: null,
@@ -65,12 +67,20 @@ export default {
         const token = localStorage.getItem("token");
         const headers = { Authorization: `Bearer ${token}` };
 
+        this.dogadaj.id_admina = this.getUserIdFromToken(token);
+        
         const formattedDate = date.formatDate(new Date(), "DD.MM.YYYY");
         this.dogadaj.datum_objave = formattedDate;
-
+        
     },
 
     methods: {
+        getUserIdFromToken(token) {
+            var dekodiraniToken = jwtDecode(token);
+            var id_korisnika = dekodiraniToken["id_korisnika"]
+            return id_korisnika
+        },
+
         provjeraPolja() {
             if (this.dogadaj.naziv_dogadaja == "" || this.dogadaj.opis_dogadaja == ""
                 || this.dogadaj.lokacija_dogadaja == "" || this.dogadaj.datum_odrzavanja == ""

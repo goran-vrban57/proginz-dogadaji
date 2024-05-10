@@ -11,7 +11,7 @@ admin_objave -> gumb Izmijeni pokraj pojedine objave. Podaci o objavi su izmjenj
             <p ref="p_naziv" style="font-weight: bold;"></p>
             <q-input v-model="objava_novo.opis_objave" outlined dense autogrow clearable label="Opis objave"/>
             <p ref="p_opis" style="font-weight: bold;"></p>
-            <q-checkbox v-model="objava_novo.dozvoljeno_komentiranje" label="Događaj traje više dana?" color="primary"/> <br>
+            <q-checkbox v-model="objava_novo.dozvoljeno_komentiranje" label="Dozvoljeno komentiranje?" color="primary"/> <br>
             <p style="font-weight: bold;">Trenutno dozvoljeno komentiranje: {{ this.dozvoljeno_komentiranje }}</p>
             <p ref="p_dozvola" style="font-weight: bold;"></p>
 

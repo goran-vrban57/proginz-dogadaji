@@ -9,7 +9,7 @@ zapisati osnovne informacije o objavi, moze ubaciti i sliku. -->
         <q-form @submit="provjeraPolja()" class="q-gutter-md">
             <q-input v-model="objava.naziv_objave" label="Naziv objave" outlined dense type="text" />
             <q-input v-model="objava.opis_objave" outlined dense autogrow clearable label="Opis objave"/>
-            <q-checkbox v-model="objava.dozvoljeno_komentiranje" label="Događaj traje više dana?" color="primary"/> <br>
+            <q-checkbox v-model="objava.dozvoljeno_komentiranje" label="Dozvoljeno komentiranje?" color="primary"/> <br>
             <div>
                 <label for="file-upload" class="custom-file-upload">
                     <input type="file" name="file" accept="image/*" @change="convertImage($event)" />
@@ -30,7 +30,7 @@ zapisati osnovne informacije o objavi, moze ubaciti i sliku. -->
 import axios from "axios";
 import imageCompression from "browser-image-compression";
 import { date } from "quasar";
-import { ref } from "vue"
+import { jwtDecode } from "jwt-decode";
 export default {
     data() {
         return {
@@ -39,6 +39,7 @@ export default {
                 opis_objave: "",
                 datum_objave: "",
                 slika_objave: "",
+                id_admina: "",
                 dozvoljeno_komentiranje: false
             },
             file: null,
@@ -52,12 +53,20 @@ export default {
         const token = localStorage.getItem("token");
         const headers = { Authorization: `Bearer ${token}` };
 
+        this.objava.id_admina=this.getUserIdFromToken(token);
+
         const formattedDate = date.formatDate(new Date(), "DD.MM.YYYY");
         this.objava.datum_objave = formattedDate;
 
     },
 
     methods: {
+        getUserIdFromToken(token) {
+            var dekodiraniToken = jwtDecode(token);
+            var id_korisnika = dekodiraniToken["id_korisnika"]
+            return id_korisnika
+        },
+
         provjeraPolja() {
             if (this.objava.naziv_objave == "" || this.objava.opis_objave == ""
                ) {
