@@ -110,6 +110,13 @@ export default {
             //ako je polje za izmjenu vec otvoreno, zatvori ga; inace ga otvori     
 
         },
+
+        resetirajStranicu() {
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        },
+
         async dodajKomentar() {
             if (this.novi_komentar.sadrzaj_komentara === "") {
                 this.$q.notify({
@@ -140,6 +147,8 @@ export default {
                         position: "top",
                         message: "Unos uspješan.",
                     });
+
+                    this.resetirajStranicu();
                 } catch (error) {
                     console.log("Greška pri slanju komentara:", error);
                     this.$q.notify({
@@ -163,6 +172,8 @@ export default {
                         message: "Uspješno brisanje komentara."
                     });
 
+                    this.resetirajStranicu();
+
                 } catch (error) {
                     console.log(error);
                     this.$q.notify({
@@ -176,7 +187,7 @@ export default {
         },
         async izmijeniKomentar(komentar) {
 
-            if(this.izmijenjen_sadrzaj === "") {
+            if (this.izmijenjen_sadrzaj === "") {
                 this.$q.notify({
                     color: "negative",
                     position: "top",
@@ -194,6 +205,8 @@ export default {
                     position: "top",
                     message: "Izmjena komentara uspješna!",
                 });
+
+                this.resetirajStranicu();
 
             } catch (error) {
                 this.$q.notify({
