@@ -78,7 +78,9 @@ export default {
         try {
             const response = await axios.get("http://localhost:3000/api/objava/" + this.id_objave);
             this.objava = response.data;
-            this.komentari = this.objava.komentari;
+            if (this.objava.komentari) {
+                this.komentari = this.objava.komentari;
+            }
 
             this.token = localStorage.getItem("token") || null;
 
@@ -164,10 +166,9 @@ export default {
             } else {
                 const headers = { Authorization: `Bearer ${this.token}` };
                 const dekodiranToken = jwtDecode(this.token);
-                if (this.komentari) {
-                    if (this.komentari.length > 1) {
-                        this.novi_komentar.id_komentara = this.komentari[this.komentari.length - 1].id_komentara + 1;
-                    }
+                console.log(this.komentari.count);
+                if (this.komentari.length >= 1) {
+                    this.novi_komentar.id_komentara = this.komentari[this.komentari.length - 1].id_komentara + 1;
                 } else {
                     this.novi_komentar.id_komentara = 1; //neka id 1 bude prvi komentar
                 }
@@ -176,9 +177,7 @@ export default {
                 this.novi_komentar.datum_komentara = date.formatDate(new Date(), "DD.MM.YYYY");
 
                 try {
-                    console.log(this.novi_komentar);
                     const response = await axios.post("http://localhost:3000/api/objava/komentiranje/" + this.id_objave, this.novi_komentar, { headers });
-                    this.komentari = this.objava.komentari;
 
                     this.$q.notify({
                         color: "positive",
