@@ -283,7 +283,7 @@ MongoClient.connect(mongoURI)
           {
             $push: {
               komentari: {
-                id_komentara: podaci.id_komentara, id_korisnika: podaci.id_korisnika, ime_korisnika: podaci.ime_korisnika,
+                id_komentara: podaci.id_komentara, id_korisnika: new ObjectId(podaci.id_korisnika), ime_korisnika: podaci.ime_korisnika,
                 sadrzaj_komentara: podaci.sadrzaj_komentara, datum_komentara: podaci.datum_komentara
               }
             }
@@ -430,7 +430,7 @@ MongoClient.connect(mongoURI)
         const decodedToken = jwt.verify(token, config.secret);
         const rezultat = await kolekcije.objava.findOneAndUpdate(
           { _id: new ObjectId(req.params.objavaId) },
-          { $pull: { "komentari": { id_komentara: parseInt(req.params.komentarId), id_korisnika: decodedToken.id_korisnika } } }
+          { $pull: { "komentari": { id_komentara: parseInt(req.params.komentarId), id_korisnika: new ObjectId(decodedToken.id_korisnika) } } }
         );
 
         res.status(200).json(rezultat);
@@ -464,15 +464,15 @@ MongoClient.connect(mongoURI)
     app.delete("/api/brisanjeKorisnikaSKomentara/:korisnikId", authJwt.verifyTokenPosebno, async (req, res) => {
       try {
         const rezultat = await kolekcije.objava.updateMany(
-          { 'komentari.id_korisnika': req.params.korisnikId }, //ovaj traži za objave koji imaju barem jedan komentar koji ispunjava uvjet
+          { 'komentari.id_korisnika': new ObjectId(req.params.korisnikId) }, //ovaj traži za objave koji imaju barem jedan komentar koji ispunjava uvjet
           { $set: { 'komentari.$[elem].ime_korisnika': 'uklonjen_korisnik' } },
-          { arrayFilters: [{ 'elem.id_korisnika': req.params.korisnikId }] } //ovaj onda dodatno lovi sve koji ispunjavaju uvjet
+          { arrayFilters: [{ 'elem.id_korisnika': new ObjectId(req.params.korisnikId) }] } //ovaj onda dodatno lovi sve koji ispunjavaju uvjet
         );
 
         res.status(200).json(rezultat);
       } catch (error) {
-        console.error("Greška u brisanju korisnika: ", error);
-        res.status(500).json({ error: "Greška u brisanju korisnika!" });
+        console.error("Greška u brisanju korisnika s komentara: ", error);
+        res.status(500).json({ error: "Greška u brisanju korisnika s komentara!" });
       }
     });
 
