@@ -1,13 +1,22 @@
 const express = require("express");
 const cors = require("cors");
+const http = require('http');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const config = require("../back/auth.config.js");
 const authJwt = require("../back/authJwt.js");
 const { MongoClient, ObjectId } = require("mongodb");
+const socketIo = require('socket.io');
 
 const app = express();
-app.use(cors());
+const server = http.createServer(app);
+
+
+app.use(cors({
+  origin: 'http://localhost:9000',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '5mb' }));
@@ -27,9 +36,20 @@ MongoClient.connect(mongoURI)
       dogadaj: db.collection("dogadaj")
     };
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
     });
+
+    const io = socketIo(server);
+    io.on('connection', (socket) => {
+      console.log('Korisnik se spojio');
+
+      socket.on('disconnect', () => {
+        console.log('Korisnik se odspojio');
+      });
+    })
+
+
 
     //administrator
     app.get("/api/administrator", authJwt.verifyTokenAdmin, async (req, res) => {
@@ -288,8 +308,9 @@ MongoClient.connect(mongoURI)
               }
             }
           },
-          //{returnOriginal: true}
         );
+
+        const emitano = io.emit('objavljenKomentar', { objavaId: req.params.objavaId, komentar: req.body })
 
         res.status(201).json(rezultat);
 
@@ -433,6 +454,8 @@ MongoClient.connect(mongoURI)
           { $pull: { "komentari": { id_komentara: parseInt(req.params.komentarId), id_korisnika: new ObjectId(decodedToken.id_korisnika) } } }
         );
 
+        const emitano = io.emit('obrisanKomentar', { objavaId: req.params.objavaId, id_komentara: req.params.komentarId })
+
         res.status(200).json(rezultat);
 
       } catch (error) {
@@ -452,6 +475,8 @@ MongoClient.connect(mongoURI)
             }
           }
         );
+
+        const emitano = io.emit('promijenjenKomentar', { objavaId: req.params.objavaId, komentar: req.body })
 
         res.status(200).json(rezultat);
 
@@ -484,11 +509,3 @@ MongoClient.connect(mongoURI)
   });
 
 
-
-
-//delete dogadaj
-//delete komentar
-//delete objava
-//delete korisnik
-
-//get nedavne objave (3-7 dana) --neobavezno

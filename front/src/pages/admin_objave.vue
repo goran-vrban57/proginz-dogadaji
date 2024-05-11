@@ -69,7 +69,6 @@ export default {
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
     this.dohvatiObjave();
-    this.komentiranje(this.objava.dozvoljeno_komentiranje);
   },
 
   methods: {

@@ -54,6 +54,7 @@ Takoder ce biti omoguceno i komentiranje u slucaju da je korisnik prijavljen. --
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import { date } from "quasar";
+import { io } from 'socket.io-client';
 export default {
     computed: {
         id_objave() {
@@ -65,10 +66,11 @@ export default {
             objava: {},
             dodavanjeOtvoreno: false,
             novi_komentar: {},
-            komentari: {},
+            komentari: [],
             token: "",
             trenutnoOtvorenZaIzmjenu: "",
-            izmijenjen_sadrzaj: ""
+            izmijenjen_sadrzaj: "",
+            socket: null,
         }
     },
 
@@ -79,6 +81,27 @@ export default {
             this.komentari = this.objava.komentari;
 
             this.token = localStorage.getItem("token") || null;
+
+            this.socket = io('http://localhost:3000', { transports: ['websocket'] });
+            this.socket.on('objavljenKomentar', (podaci) => {
+                if (this.id_objave === podaci.objavaId) {
+                    this.prikaziObjavljenKomentar(podaci.komentar);
+                }
+            })
+            this.socket.on('obrisanKomentar', (podaci) => {
+                if (this.id_objave === podaci.objavaId) {
+                    this.ukloniObrisaniKomentar(podaci.id_komentara);
+                }
+            })
+            this.socket.on('promijenjenKomentar', (podaci) => {
+                if (this.id_objave === podaci.objavaId) {
+                    this.izmijeniPromijenjeniKomentar(podaci.komentar);
+                }
+            })
+            this.socket.on("connect_error", (err) => {
+                //console.log(err.message);
+                //console.log(err.description);
+            });
         } catch (error) {
             console.log("Greška pri dohvaćanju podataka.", error);
         }
@@ -117,6 +140,19 @@ export default {
             }, 1000);
         },
 
+        prikaziObjavljenKomentar(komentar) {
+            this.komentari.push(komentar);
+        },
+        ukloniObrisaniKomentar(id) {
+            const index = this.komentari.findIndex(komentar => komentar.id_komentara === id);
+            this.komentari.splice(index - 1, 1); //-1 jer se ovdje gleda na klasični array 0,1,2... da, zeznuo sam sa prvim kom id 1. ¯\_(ツ)_/¯
+        },
+        izmijeniPromijenjeniKomentar(promijenjenKomentar) {
+            const index = this.komentari.findIndex(komentar => komentar.id_komentara === parseInt(promijenjenKomentar.id_komentara));
+            this.komentari[index].sadrzaj_komentara = promijenjenKomentar.sadrzaj_komentara;
+
+        },
+
         async dodajKomentar() {
             if (this.novi_komentar.sadrzaj_komentara === "") {
                 this.$q.notify({
@@ -129,7 +165,9 @@ export default {
                 const headers = { Authorization: `Bearer ${this.token}` };
                 const dekodiranToken = jwtDecode(this.token);
                 if (this.komentari) {
-                    this.novi_komentar.id_komentara = this.komentari[this.komentari.length - 1].id_komentara + 1;
+                    if (this.komentari.length > 1) {
+                        this.novi_komentar.id_komentara = this.komentari[this.komentari.length - 1].id_komentara + 1;
+                    }
                 } else {
                     this.novi_komentar.id_komentara = 1; //neka id 1 bude prvi komentar
                 }
@@ -148,7 +186,12 @@ export default {
                         message: "Unos uspješan.",
                     });
 
-                    this.resetirajStranicu();
+                    //zatvori i isprazni
+                    this.dodavanjeOtvoreno = false;
+                    this.novi_komentar.sadrzaj_komentara = "";
+
+
+                    //this.resetirajStranicu();
                 } catch (error) {
                     console.log("Greška pri slanju komentara:", error);
                     this.$q.notify({
@@ -172,7 +215,7 @@ export default {
                         message: "Uspješno brisanje komentara."
                     });
 
-                    this.resetirajStranicu();
+                    //this.resetirajStranicu();
 
                 } catch (error) {
                     console.log(error);
@@ -206,7 +249,7 @@ export default {
                     message: "Izmjena komentara uspješna!",
                 });
 
-                this.resetirajStranicu();
+                //this.resetirajStranicu();
 
             } catch (error) {
                 this.$q.notify({
