@@ -128,6 +128,7 @@ export default {
                 const token = localStorage.getItem("token");
                 const headers = { Authorization: `Bearer ${token}` };
                 const response = await axios.delete("http://localhost:3000/api/brisanjeKorisnika/" + userId, { headers });
+                const response2 = await axios.delete("http://localhost:3000/api/brisanjeKorisnikaSKomentara/" + userId, {headers});
 
                 localStorage.removeItem("token");
                 await this.$router.push({ path: '/' });

@@ -461,6 +461,21 @@ MongoClient.connect(mongoURI)
       }
     });
 
+    app.delete("/api/brisanjeKorisnikaSKomentara/:korisnikId", authJwt.verifyTokenPosebno, async (req, res) => {
+      try {
+        const rezultat = await kolekcije.objava.updateMany(
+          { 'komentari.id_korisnika': req.params.korisnikId }, //ovaj traži za objave koji imaju barem jedan komentar koji ispunjava uvjet
+          { $set: { 'komentari.$[elem].ime_korisnika': 'uklonjen_korisnik' } },
+          { arrayFilters: [{ 'elem.id_korisnika': req.params.korisnikId }] } //ovaj onda dodatno lovi sve koji ispunjavaju uvjet
+        );
+
+        res.status(200).json(rezultat);
+      } catch (error) {
+        console.error("Greška u brisanju korisnika: ", error);
+        res.status(500).json({ error: "Greška u brisanju korisnika!" });
+      }
+    });
+
 
   })
   .catch((err) => {

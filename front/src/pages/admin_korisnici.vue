@@ -109,6 +109,7 @@ export default {
         const token = localStorage.getItem("token");
         const headers = { Authorization: `Bearer ${token}` };
         const response = await axios.delete("http://localhost:3000/api/brisanjeKorisnika/"+ idKorisnika, {headers});
+        const response2 = await axios.delete("http://localhost:3000/api/brisanjeKorisnikaSKomentara/" + idKorisnika, {headers});
         console.log(response);
 
         this.$q.notify({
