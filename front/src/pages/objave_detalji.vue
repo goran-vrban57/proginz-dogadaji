@@ -146,8 +146,10 @@ export default {
             this.komentari.push(komentar);
         },
         ukloniObrisaniKomentar(id) {
-            const index = this.komentari.findIndex(komentar => komentar.id_komentara === id);
-            this.komentari.splice(index - 1, 1); //-1 jer se ovdje gleda na klasični array 0,1,2... da, zeznuo sam sa prvim kom id 1. ¯\_(ツ)_/¯
+            console.log("ID KOJI DOLAZI: "+id);
+            const index = this.komentari.findIndex(komentar => komentar.id_komentara === parseInt(id));
+            console.log("INDEKS KOMENTARA?: "+index);
+            this.komentari.splice(index, 1);
         },
         izmijeniPromijenjeniKomentar(promijenjenKomentar) {
             const index = this.komentari.findIndex(komentar => komentar.id_komentara === parseInt(promijenjenKomentar.id_komentara));
@@ -166,7 +168,6 @@ export default {
             } else {
                 const headers = { Authorization: `Bearer ${this.token}` };
                 const dekodiranToken = jwtDecode(this.token);
-                console.log(this.komentari.count);
                 if (this.komentari.length >= 1) {
                     this.novi_komentar.id_komentara = this.komentari[this.komentari.length - 1].id_komentara + 1;
                 } else {

@@ -42,10 +42,10 @@ MongoClient.connect(mongoURI)
 
     const io = socketIo(server);
     io.on('connection', (socket) => {
-      console.log('Korisnik se spojio');
+      //console.log('Korisnik se spojio');
 
       socket.on('disconnect', () => {
-        console.log('Korisnik se odspojio');
+        //console.log('Korisnik se odspojio');
       });
     })
 
