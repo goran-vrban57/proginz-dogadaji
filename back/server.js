@@ -6,11 +6,17 @@ const jwt = require("jsonwebtoken");
 const config = require("../back/auth.config.js");
 const authJwt = require("../back/authJwt.js");
 const { MongoClient, ObjectId } = require("mongodb");
+const dotenv = require('dotenv')
 const socketIo = require('socket.io');
+const sgMail = require('@sendgrid/mail');
+
+
 
 const app = express();
 const server = http.createServer(app);
 
+dotenv.config();
+sgMail.setApiKey(process.env.SendGrid_API_KEY);
 
 app.use(cors({
   origin: 'http://localhost:9000',
@@ -501,6 +507,32 @@ MongoClient.connect(mongoURI)
       }
     });
 
+    // za slanje mailova    
+
+    app.post('/api/sendEmail', (req, res) => {
+      const { to, from, subject, naziv, opis, id } = req.body;
+     
+      const msg = {
+        to: to,
+        from: from,
+        templateId: process.env.SendGrid_TEMPLATE_ID,
+        dynamic_template_data: {
+          subject: subject,
+          naziv: naziv,
+          opis: opis,
+          veza: 'http://localhost:9000/#/dogadaj_detalji?_id='+id,
+        },
+      };
+
+      sgMail.send(msg)
+        .then(() => {
+          res.send('Email sent successfully');
+        })
+        .catch(error => {
+          console.error(error);
+          res.status(500).send('Error sending email');
+        }); 
+    });
 
   })
   .catch((err) => {

@@ -22,6 +22,10 @@ Uz svaku od stavki koje ce biti u sklopu tablice nalaziti ce se i gumbovi za izm
             <q-btn color="red" label="Obriši" icon-right="delete" @click="brisanje(props.row._id)" />
           </q-btn-group>
         </template>
+        <template v-slot:body-cell-newsletter="props">
+        <q-btn color="primary" label="Pošalji" icon-right="mail" @click="dohvatiKorisnikeZaNewsiSend(props.row._id,
+        props.row.naziv_dogadaja, props.row.opis_dogadaja)" />
+      </template>
       </q-table>
       <q-btn class="q-my-md" icon-right="add" color="primary" label="Dodaj novi događaj" @click="dodajDogadaj()" />
     </div>
@@ -71,6 +75,11 @@ export default {
           label: "Dodatne mogućnosti",
           align: "center",
         },
+        {
+          name: "newsletter",
+          label: "Newsletter",
+          align: "center",
+        },
       ],
     };
   },
@@ -90,6 +99,43 @@ export default {
         this.dogadaji = response.data;
       } catch (error) {
         console.error("Greška pri dohvatu događaja", error);
+      }
+    },
+
+    async dohvatiKorisnikeZaNewsiSend(id, subject, opis) {
+      try {
+        const token = localStorage.getItem("token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const response = await axios.get('http://localhost:3000/api/korisnikNewsletter', { headers });
+
+        this.korisniciZaNews = []; //praznimo polje zbog nakupljanja
+
+        response.data.forEach(korisnik => { //za svaki index polja
+          this.korisniciZaNews.push(korisnik.email_korisnika);
+        });
+
+        const dataToSend = {
+          to: this.korisniciZaNews,
+          from: 'efett@veleri.hr',       //promjeniti u odgovarajuci mail**
+          subject: "Pozivamo Vas na događaj - " + subject,
+          naziv: subject,
+          opis: opis,
+          id: id,
+        };
+
+        //console.log(dataToSend);
+
+        const send = await axios.post('http://localhost:3000/api/sendEmail', dataToSend);
+
+        this.$q.notify({
+          color: "positive",
+          position: "top",
+          message: "Uspješno slanje newsletter-a."
+        });
+
+      } catch (error) {
+        console.error("Greška pri dohvatu korisnika za newsletter", error);
       }
     },
 
