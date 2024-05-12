@@ -1,7 +1,6 @@
 <!-- Pocetna stranica aplikacije. Sadrzavati ce osnovne informacije ili nekakvu dobrodoslicu. -->
 
 <template>
-    <div class="q-mt-lg">
     <section class="">
         <h4 class="q-mx-xl background-container flex flex-center">Nadolazeći događaji</h4>
         <div class="q-ma-sm row flex flex-center">
@@ -18,7 +17,6 @@
         </div>
         <h6 class="text-right q-mx-xl">Za više kliknite <router-link to="dogadaji" style="color: orange">ovdje</router-link></h6>
     </section>
-</div>
     <div class="q-mt-lg">
     <section class="q-mt-lg">
     <h4 class="q-mx-xl background-container flex flex-center">Objave</h4>
