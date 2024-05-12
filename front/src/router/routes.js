@@ -3,7 +3,7 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '/', component: () => import('pages/IndexPage.vue') },
+      { path: '/', component: () => import('pages/pocetna.vue') },
       { path: 'dogadaji', component: () => import('pages/dogadaji.vue') },
       { path: 'dogadaj_detalji', component: () => import('pages/dogadaj_detalji.vue') },
       { path: 'objave', component: () => import('pages/objave.vue') },

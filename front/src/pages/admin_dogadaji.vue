@@ -20,12 +20,10 @@ Uz svaku od stavki koje ce biti u sklopu tablice nalaziti ce se i gumbovi za izm
           <q-btn-group spread>
             <q-btn color="accent" label="Izmijeni" icon-right="edit" @click="odiNaDetalje(props.row._id)" />
             <q-btn color="red" label="Obriši" icon-right="delete" @click="brisanje(props.row._id)" />
+            <q-btn color="primary" label="Pošalji" icon-right="mail" @click="dohvatiKorisnikeZaNewsiSend(props.row._id,
+            props.row.naziv_dogadaja, props.row.opis_dogadaja)" />
           </q-btn-group>
         </template>
-        <template v-slot:body-cell-newsletter="props">
-        <q-btn color="primary" label="Pošalji" icon-right="mail" @click="dohvatiKorisnikeZaNewsiSend(props.row._id,
-        props.row.naziv_dogadaja, props.row.opis_dogadaja)" />
-      </template>
       </q-table>
       <q-btn class="q-my-md" icon-right="add" color="primary" label="Dodaj novi događaj" @click="dodajDogadaj()" />
     </div>
@@ -73,11 +71,6 @@ export default {
         {
           name: "gumbovi",
           label: "Dodatne mogućnosti",
-          align: "center",
-        },
-        {
-          name: "newsletter",
-          label: "Newsletter",
           align: "center",
         },
       ],

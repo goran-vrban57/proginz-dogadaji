@@ -42,6 +42,12 @@
         </template>
       </q-toolbar>
       <q-tabs inline-label class="bg-primary text-white">
+        <router-link to="/" class="link-color">
+          <q-tab name="pocetna">
+            <span style="font-size: 14px">Početna</span>
+            <!--izgled je kao link nazalost, mozda CSS stil da bude cisti tekst-->
+          </q-tab>
+        </router-link>
         <router-link to="/dogadaji" class="link-color">
           <q-tab name="dogadaj">
             <span style="font-size: 14px">Događaji</span>
@@ -131,7 +137,7 @@ const odjava = () => {
   }
 };
 
-const tab = ref("dogadaj");
+const tab = ref("pocetna");
 
 defineOptions({
   name: "MainLayout",
