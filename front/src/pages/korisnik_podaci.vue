@@ -4,7 +4,7 @@
       <div class="row">
         <h5 class="text-h3 text-primary q-mt-md q-mb-md">Vaši podaci</h5>
       </div>
-      <div class="q-mx-xl background-container" >
+      <div class="q-mx-xl background" >
         <p>Korisničko ime: {{ korisnik.korisnicko_ime }}</p>
         <p>Email: {{ korisnik.email_korisnika }}</p>
         <p>Datum registracije: {{ korisnik.datum_registracije }}</p>
@@ -88,7 +88,7 @@ export default {
   text-size-adjust: 30px;
 }
 
-.background-container {
+.background {
   background-color: rgb(246, 243, 239);
   padding: 3% 3% 1% 3%;
   display: inline-block;
