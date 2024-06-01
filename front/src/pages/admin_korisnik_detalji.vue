@@ -26,11 +26,13 @@ admin_korisnici -> gumb Izmijeni pokraj pojedinog korisnika. -->
 
 <script>
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import { ref } from "vue"
 export default {
     data() {
         return {
             korisnik_trenutno: {
+                id_korisnika: "",
                 korisnicko_ime: "",
                 email_korisnika: "",
                 lozinka_korisnika: "",
@@ -46,6 +48,8 @@ export default {
                 prima_newsletter: false,
                 uloga: 1
             },
+            id_admina: "",
+            istiId: false,
             lozinka_korisnika: "",
             provjera_lozinke: "",
             je_admin: false,
@@ -56,11 +60,27 @@ export default {
         const headers = { Authorization: `Bearer ${token}` };
         const id = this.$route.params.id;
 
+        this.korisnik_trenutno.id_korisnika = id;
+        this.id_admina = this.getUserIdFromToken(token);
+        this.checkId(this.id_admina,this.korisnik_trenutno.id_korisnika);       
+
         await this.dohvatiKorisnika(id, headers);
         this.ispisiPodatke();
     },
 
     methods: {
+
+        checkId(id1,id2){
+            if(id1===id2)
+                this.istiId=true;
+        },
+
+        getUserIdFromToken(token) {
+            var dekodiraniToken = jwtDecode(token);
+            var id_korisnika = dekodiraniToken["id_korisnika"]
+            return id_korisnika
+        },
+
         async dohvatiKorisnika(id, headers) {
             try {
                 const response = await axios.get("http://localhost:3000/api/korisnik/" + id, { headers });
@@ -140,6 +160,11 @@ export default {
                     position: "top",
                     message: "Izmjena podataka uspješna!",
                 });
+
+                if(this.istiId && this.korisnik_novo.uloga===1){
+                    localStorage.removeItem("token");
+                    window.location.reload();
+                }
 
                 await this.dohvatiKorisnika(this.korisnik_novo._id, headers);
                 this.ocistiPolja();
