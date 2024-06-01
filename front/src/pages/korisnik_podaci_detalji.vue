@@ -104,7 +104,7 @@ export default {
 
                 this.korisnik.lozinka_korisnika = this.lozinka_korisnika;
 
-                const response = await axios.put("http://localhost:3000/api/izmjenaKorisnika/" + this.korisnik._id, this.korisnik, { headers });
+                const response = await axios.put("http://localhost:3000/api/izmjenaKorisnikaSelf/" + this.korisnik._id, this.korisnik, { headers });
                 this.$q.notify({
                     color: "positive",
                     position: "top",

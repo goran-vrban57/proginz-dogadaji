@@ -326,7 +326,50 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.put("/api/izmjenaKorisnika/:korisnikId", authJwt.verifyTokenPosebno, async (req, res) => {
+    app.put("/api/izmjenaKorisnika/:korisnikId", authJwt.verifyTokenAdmin, async (req, res) => {
+      try {
+
+        const podaci = req.body;
+        const saltRounds = 10;
+
+        if (podaci.lozinka_korisnika != "") { //ako je lozinka unesena
+          console.log("Nova lozinka JE unesena");
+          bcrypt.hash(podaci.lozinka_korisnika, saltRounds, async function (err, hash) {
+            if (err) {
+              console.error("Greška pri hashanju lozinke:", err);
+              return response.status(500).json({ error: true, message: "Greška pri hashanju lozinke." });
+            }
+            const rezultat = await kolekcije.korisnik.findOneAndUpdate(
+              { _id: new ObjectId(req.params.korisnikId) },
+              {
+                $set: {
+                  korisnicko_ime: podaci.korisnicko_ime, email_korisnika: podaci.email_korisnika,
+                  lozinka_korisnika: hash, prima_newsletter: podaci.prima_newsletter, uloga: podaci.uloga
+                }
+              }
+            );
+            res.status(200).json(rezultat);
+          })
+        } else { //ako nema nove lozinke
+          const rezultat = await kolekcije.korisnik.findOneAndUpdate(
+            { _id: new ObjectId(req.params.korisnikId) },
+            {
+              $set: {
+                korisnicko_ime: podaci.korisnicko_ime, email_korisnika: podaci.email_korisnika, prima_newsletter: podaci.prima_newsletter,
+                uloga: podaci.uloga
+              }
+            }
+          );
+          res.status(200).json(rezultat);
+        }
+
+      } catch (error) {
+        console.error("Greška u izmjeni korisničkih podataka: ", error);
+        res.status(500).json({ error: "Greška u izmjeni korisničkih podataka!" });
+      }
+    });
+
+    app.put("/api/izmjenaKorisnikaSelf/:korisnikId", authJwt.verifyTokenPosebno, async (req, res) => {
       try {
 
         const podaci = req.body;
@@ -511,7 +554,7 @@ MongoClient.connect(mongoURI)
 
     app.post('/api/sendEmail', (req, res) => {
       const { to, from, subject, naziv, opis, id } = req.body;
-     
+
       const msg = {
         to: to,
         from: from,
@@ -520,7 +563,7 @@ MongoClient.connect(mongoURI)
           subject: subject,
           naziv: naziv,
           opis: opis,
-          veza: 'http://localhost:9000/#/dogadaj_detalji?_id='+id,
+          veza: 'http://localhost:9000/#/dogadaj_detalji?_id=' + id,
         },
       };
 
@@ -531,7 +574,7 @@ MongoClient.connect(mongoURI)
         .catch(error => {
           console.error(error);
           res.status(500).send('Error sending email');
-        }); 
+        });
     });
 
   })

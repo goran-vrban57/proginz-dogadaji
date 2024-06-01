@@ -13,8 +13,10 @@ admin_korisnici -> gumb Izmijeni pokraj pojedinog korisnika. -->
             <p ref="p_email" style="font-weight: bold;"></p>
             <q-input v-model="lozinka_korisnika" label="Nova lozinka" outlined dense type="password" />
             <q-input v-model="provjera_lozinke" label="Ponovite novu lozinku" outlined dense type="password" />
-            <q-checkbox v-model="korisnik_novo.prima_newsletter" label="Primati će newsletter" />
+            <q-checkbox v-model="korisnik_novo.prima_newsletter" label="Primati će newsletter" /> <br>
             <p ref="p_newsletter" style="font-weight: bold;"></p>
+            <q-checkbox v-model="je_admin" label="Admin uloga" color="primary"/> <br>
+            <p ref="p_uloga" style="font-weight: bold;"></p>
             <div class="text-center q-py-xl">
                 <q-btn size="lg" type="submit" label="Izmijeni korisnika" color="primary" />
             </div>
@@ -32,7 +34,8 @@ export default {
                 korisnicko_ime: "",
                 email_korisnika: "",
                 lozinka_korisnika: "",
-                prima_newsletter: false
+                prima_newsletter: false,
+                uloga: 1
 
             },
             korisnik_novo: {
@@ -40,10 +43,12 @@ export default {
                 korisnicko_ime: "",
                 email_korisnika: "",
                 lozinka_korisnika: "",
-                prima_newsletter: false
+                prima_newsletter: false,
+                uloga: 1
             },
             lozinka_korisnika: "",
-            provjera_lozinke: ""
+            provjera_lozinke: "",
+            je_admin: false,
         };
     },
     async mounted() {
@@ -75,6 +80,15 @@ export default {
                 this.$refs.p_email.textContent = "Trenutni e-mail: " + this.korisnik_trenutno.email_korisnika;
                 //linija ispod - ako je newsletter true, ispiše se prvi string, inače drugi
                 this.korisnik_trenutno.prima_newsletter ? this.$refs.p_newsletter.textContent = "Korisnik trenutno prima newsletter." : this.$refs.p_newsletter.textContent = 'Korisnik trenutno ne prima newsletter.';
+
+                //za trenutno stanje uloge
+                if (this.korisnik_trenutno.uloga === 0) {
+                    this.$refs.p_uloga.textContent = "Trenutna uloga je ADMINISTRATOR";
+                    this.je_admin = true;
+                } else {
+                    this.$refs.p_uloga.textContent = 'Trenutna uloga je KORISNIK';
+                    this.je_admin = false;
+                }
             } catch (error) {
                 console.error("Greška pri upisivanju podataka ref", error);
             }
@@ -117,6 +131,8 @@ export default {
                 const headers = { Authorization: `Bearer ${token}` };
 
                 this.korisnik_novo.lozinka_korisnika = this.lozinka_korisnika;
+                //linija ispod - ako je admin zakvačen, onda uloga 0 (admin), inače obični korisnik
+                this.je_admin === true ? this.korisnik_novo.uloga = 0 : this.korisnik_novo.uloga = 1;
 
                 const response = await axios.put("http://localhost:3000/api/izmjenaKorisnika/" + this.korisnik_novo._id, this.korisnik_novo, { headers });
                 this.$q.notify({

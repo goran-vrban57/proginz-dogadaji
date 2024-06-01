@@ -73,8 +73,6 @@
         } catch (error) {
           console.log("Greška pri dohvaćanju podataka.", error);
         }
-
-        console.log(this.dogadaji);
       },
   
       pregledDogadaja(_id) {
