@@ -15,7 +15,7 @@ admin_korisnici -> gumb Izmijeni pokraj pojedinog korisnika. -->
             <q-input v-model="provjera_lozinke" label="Ponovite novu lozinku" outlined dense type="password" />
             <q-checkbox v-model="korisnik_novo.prima_newsletter" label="Primati će newsletter" /> <br>
             <p ref="p_newsletter" style="font-weight: bold;"></p>
-            <q-checkbox v-model="je_admin" label="Admin uloga" color="primary"/> <br>
+            <q-checkbox v-model="je_admin" label="Admin uloga" color="primary" /> <br>
             <p ref="p_uloga" style="font-weight: bold;"></p>
             <div class="text-center q-py-xl">
                 <q-btn size="lg" type="submit" label="Izmijeni korisnika" color="primary" />
@@ -62,7 +62,7 @@ export default {
 
         this.korisnik_trenutno.id_korisnika = id;
         this.id_admina = this.getUserIdFromToken(token);
-        this.checkId(this.id_admina,this.korisnik_trenutno.id_korisnika);       
+        this.checkId(this.id_admina, this.korisnik_trenutno.id_korisnika);
 
         await this.dohvatiKorisnika(id, headers);
         this.ispisiPodatke();
@@ -70,9 +70,9 @@ export default {
 
     methods: {
 
-        checkId(id1,id2){
-            if(id1===id2)
-                this.istiId=true;
+        checkId(id1, id2) {
+            if (id1 === id2)
+                this.istiId = true;
         },
 
         getUserIdFromToken(token) {
@@ -161,7 +161,10 @@ export default {
                     message: "Izmjena podataka uspješna!",
                 });
 
-                if(this.istiId && this.korisnik_novo.uloga===1){
+                //ako se mijenja username, mora se promijeniti i svugdje gdje je taj korisnik komentirao
+                const response2 = await axios.put("http://localhost:3000/api/izmjenaKorisnikaNaKomentaru/" + this.korisnik_novo._id, this.korisnik_novo, { headers });
+
+                if (this.istiId && this.korisnik_novo.uloga === 1) {
                     localStorage.removeItem("token");
                     window.location.reload();
                 }

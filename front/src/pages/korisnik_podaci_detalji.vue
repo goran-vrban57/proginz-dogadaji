@@ -36,7 +36,8 @@ export default {
             },
             promjenaLozinke: false,
             lozinka_korisnika: "",
-            provjera_lozinke: ""
+            provjera_lozinke: "",
+            staro_kor_ime: ""
         };
     },
     async mounted() {
@@ -59,6 +60,7 @@ export default {
                 const headers = { Authorization: `Bearer ${token}` };
                 const response = await axios.get("http://localhost:3000/api/korisnikSelf/" + userId, { headers });
                 this.korisnik = response.data;
+                this.staro_kor_ime = this.korisnik.korisnicko_ime;
             } catch (error) {
                 console.error("Greška pri čitanju podataka korisnika:", error);
                 throw error;
@@ -110,6 +112,8 @@ export default {
                     position: "top",
                     message: "Izmjena podataka uspješna!",
                 });
+
+                const response2 = await axios.put("http://localhost:3000/api/izmjenaKorisnikaNaKomentaru/" + this.korisnik._id, this.korisnik, { headers });
 
                 this.previosPage();
             } catch (error) {

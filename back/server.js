@@ -55,35 +55,6 @@ MongoClient.connect(mongoURI)
       });
     })
 
-
-
-    //administrator
-    app.get("/api/administrator", authJwt.verifyTokenAdmin, async (req, res) => {
-      try {
-        const data = await kolekcije.administrator.find().toArray();
-        res.json(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        res.status(500).json({ error: "Interna greška poslužitelja." });
-      }
-    });
-
-    app.get("/api/administrator/:id", authJwt.verifyTokenAdmin, async (req, res) => {
-      try {
-        const id = req.params.id;
-        const data = await kolekcije.administrator.findOne({ "_id": new ObjectId(id) });
-
-        if (!data) {
-          return res.status(404).json({ message: 'Nema rezultata.' });
-        }
-
-        res.json(data);
-      } catch (error) {
-        console.error("Error: ", error)
-        res.status(500).json({ error: "Interna greška poslužitelja." });
-      }
-    });
-
     //dogadaj
     app.get("/api/dogadaj", async (req, res) => {
       try {
@@ -142,7 +113,7 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.get("/api/korisnik/:id", authJwt.verifyTokenPosebno, async (req, res) => { //ako pukne, probaj sa Posebno na User
+    app.get("/api/korisnik/:id", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
         const id = req.params.id;
         const data = await kolekcije.korisnik.findOne({ "_id": new ObjectId(id) });
@@ -158,7 +129,7 @@ MongoClient.connect(mongoURI)
       }
 
     });
-    app.get("/api/korisnikSelf/:id", authJwt.verifyTokenUser, async (req, res) => { //ako pukne, probaj sa Posebno na User
+    app.get("/api/korisnikSelf/:id", authJwt.verifyTokenUser, async (req, res) => {
       try {
         const id = req.params.id;
         const data = await kolekcije.korisnik.findOne({ "_id": new ObjectId(id) });
@@ -261,19 +232,6 @@ MongoClient.connect(mongoURI)
         res.status(500).json({ error: "Greška u prijavi!" });
       }
     });
-
-    app.post("/api/dodavanjeAdmina", authJwt.verifyTokenAdmin, async (req, res) => { //za svaki slucaj
-      try {
-        const podaci = req.body;
-        const rezultat = await kolekcije.administrator.insertOne(podaci);
-
-        res.status(201).json(rezultat);
-      } catch (error) {
-        console.error("Greška u dodavanju admina: ", error);
-        res.status(500).json({ error: "Greška u dodavanju admina!" });
-      }
-    });
-
 
     app.post("/api/dodavanjeDogadaja", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
@@ -496,11 +454,9 @@ MongoClient.connect(mongoURI)
 
     app.delete("/api/objava/:objavaId/brisanjeKomentara/:komentarId", authJwt.verifyTokenPosebno, async (req, res) => {
       try {
-        const token = req.headers.authorization.split(' ')[1];
-        const decodedToken = jwt.verify(token, config.secret);
         const rezultat = await kolekcije.objava.findOneAndUpdate(
           { _id: new ObjectId(req.params.objavaId) },
-          { $pull: { "komentari": { id_komentara: parseInt(req.params.komentarId), id_korisnika: new ObjectId(decodedToken.id_korisnika) } } }
+          { $pull: { "komentari": { id_komentara: parseInt(req.params.komentarId) } } }
         );
 
         const emitano = io.emit('obrisanKomentar', { objavaId: req.params.objavaId, id_komentara: req.params.komentarId })
@@ -547,6 +503,22 @@ MongoClient.connect(mongoURI)
       } catch (error) {
         console.error("Greška u brisanju korisnika s komentara: ", error);
         res.status(500).json({ error: "Greška u brisanju korisnika s komentara!" });
+      }
+    });
+
+    app.put("/api/izmjenaKorisnikaNaKomentaru/:korisnikId", authJwt.verifyTokenPosebno, async (req, res) => {
+      const podaci = req.body;
+      try {
+        const rezultat = await kolekcije.objava.updateMany(
+          { 'komentari.id_korisnika': new ObjectId(req.params.korisnikId) },
+          { $set: { 'komentari.$[elem].ime_korisnika': podaci.korisnicko_ime } },
+          { arrayFilters: [{ 'elem.id_korisnika': new ObjectId(req.params.korisnikId) }] }
+        );
+
+        res.status(200).json(rezultat);
+      } catch (error) {
+        console.error("Greška u izmjeni korisnika na komentaru: ", error);
+        res.status(500).json({ error: "Greška u izmjeni korisnika na komentaru!" });
       }
     });
 
