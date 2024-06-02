@@ -82,26 +82,6 @@ MongoClient.connect(mongoURI)
       }
     });
 
-    app.get("/api/nadolazeciDogadaji", async (req, res) => {
-      try {
-        const data = await kolekcije.dogadaj.find({ datum_odrzavanja: { $gte: new Date() } }).sort({ datum_odrzavanja: 1 }).toArray(); //1 rastuce
-        res.json(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        res.status(500).json({ error: "Interna greška poslužitelja." });
-      }
-    });
-
-    app.get("/api/protekliDogadaji", async (req, res) => {
-      try {
-        const data = await kolekcije.dogadaj.find({ datum_odrzavanja: { $lt: new Date() } }).sort({ datum_odrzavanja: -1 }).toArray(); //-1 padajuce
-        res.json(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        res.status(500).json({ error: "Interna greška poslužitelja." });
-      }
-    });
-
     //korisnik
     app.get("/api/korisnik", authJwt.verifyTokenAdmin, async (req, res) => {
       try {
@@ -524,12 +504,12 @@ MongoClient.connect(mongoURI)
 
     // za slanje mailova    
 
-    app.post('/api/sendEmail', (req, res) => {
-      const { to, from, subject, naziv, opis, id } = req.body;
+    app.post('/api/sendEmail', authJwt.verifyTokenAdmin, (req, res) => {
+      const { to, subject, naziv, opis, id } = req.body;
 
       const msg = {
         to: to,
-        from: from,
+        from: process.env.SendGrid_FROM,
         templateId: process.env.SendGrid_TEMPLATE_ID,
         dynamic_template_data: {
           subject: subject,
@@ -541,11 +521,11 @@ MongoClient.connect(mongoURI)
 
       sgMail.send(msg)
         .then(() => {
-          res.send('Email sent successfully');
+          res.send('Email uspješno poslan');
         })
         .catch(error => {
           console.error(error);
-          res.status(500).send('Error sending email');
+          res.status(500).send('Greška pri slanju emaila.');
         });
     });
 

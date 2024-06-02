@@ -110,7 +110,6 @@ export default {
 
         const dataToSend = {
           to: this.korisniciZaNews,
-          from: 'efett@veleri.hr',       //promjeniti u odgovarajuci mail**
           subject: "Pozivamo Vas na događaj - " + subject,
           naziv: subject,
           opis: opis,
@@ -119,7 +118,7 @@ export default {
 
         //console.log(dataToSend);
 
-        const send = await axios.post('http://localhost:3000/api/sendEmail', dataToSend);
+        const send = await axios.post('http://localhost:3000/api/sendEmail', dataToSend, { headers });
 
         this.$q.notify({
           color: "positive",
