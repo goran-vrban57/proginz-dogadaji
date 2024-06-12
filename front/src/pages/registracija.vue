@@ -28,6 +28,7 @@ Korisnicko ime, e-mail adresa, lozinka/potvrdi lozinku.-->
 <script>
 import axios from "axios";
 import vueRecaptcha from 'vue3-recaptcha2';
+import { date } from "quasar";
 export default {
     components: {
         vueRecaptcha
@@ -52,7 +53,7 @@ export default {
 
         async registracija() {
             try {
-                this.podaci.datum_registracije = new Date();
+                this.podaci.datum_registracije = date.formatDate(new Date(), "DD.MM.YYYY");
                 const response = await axios.post("http://localhost:3000/api/registracija", this.podaci);
 
                 this.$q.notify({
