@@ -39,14 +39,15 @@ Takoder ce biti omoguceno i komentiranje u slucaju da je korisnik prijavljen. --
                 </q-card-actions>
             </q-card>
         </div>
+        <p v-if="token==null" style="padding-top: 1%;">Prijavite se kako bi komentirali.</p>
         <q-btn v-if="token && !dodavanjeOtvoreno" class="q-my-md" icon-right="add" color="primary"
             label="Dodaj novi komentar" @click="otvoriZaDodavanje()" />
-        <div v-if="dodavanjeOtvoreno">
-            <q-input v-model="novi_komentar.sadrzaj_komentara" outlined dense autogrow clearable
+            <div v-if="dodavanjeOtvoreno">
+                <q-input v-model="novi_komentar.sadrzaj_komentara" outlined dense autogrow clearable
                 label="Unesite komentar" />
-            <q-btn class="q-my-md" color="primary" label="Postavi komentar" @click="dodajKomentar()" />
-        </div>
-    </div>
+                <q-btn class="q-my-md" color="primary" label="Postavi komentar" @click="dodajKomentar()" />
+                </div>
+                </div>
 
 </template>
 
@@ -73,6 +74,8 @@ export default {
             socket: null,
         }
     },
+
+    
 
     async mounted() {
         try {
